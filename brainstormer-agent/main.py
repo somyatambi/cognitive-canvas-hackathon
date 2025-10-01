@@ -1,5 +1,3 @@
-# cognitive-canvas-backend/brainstormer-agent/main.py
-
 import os
 from fastapi import FastAPI
 from pydantic import BaseModel
@@ -26,7 +24,7 @@ async def generate_brainstorm(request: BrainstormRequest):
     """
     try:
         model_identifier = "meta-llama/llama-3.1-8b-instruct"
-        
+
         completion = client.chat.completions.create(
           model=model_identifier,
           messages=[

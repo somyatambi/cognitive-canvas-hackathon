@@ -1,0 +1,11 @@
+# cognitive-canvas-hackathon/.gitignore
+
+# Python
+__pycache__/
+*.pyc
+.env
+venv/
+
+# OS-specific
+.DS_Store
+Thumbs.db

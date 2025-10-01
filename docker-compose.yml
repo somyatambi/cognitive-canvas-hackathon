@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  brainstormer-agent:
+    build: ./brainstormer-agent
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+
+  critic-agent:
+    build: ./critic-agent
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+
+  mcp-gateway:
+    image: docker/mcp-gateway
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./mcp-gateway.json:/config/routes.json
