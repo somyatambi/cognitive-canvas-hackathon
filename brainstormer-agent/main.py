@@ -2,43 +2,35 @@ import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from openai import OpenAI
+from fastapi.middleware.cors import CORSMiddleware # <-- 1. IMPORT THIS
 
-# Pydantic model for the request body to ensure data is in the expected format
-class BrainstormRequest(BaseModel):
+class AgentRequest(BaseModel):
     prompt: str
 
-# Initialize the FastAPI app
 app = FastAPI()
 
-# Initialize the OpenAI client to point to OpenRouter's API
-client = OpenAI(
-  base_url="https://openrouter.ai/api/v1",
-  api_key=os.getenv("OPENROUTER_API_KEY"),
+# 2. ADD THIS MIDDLEWARE CONFIGURATION
+# This tells the backend to allow requests from your frontend.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"], # Allows all origins, suitable for a hackathon.
+    allow_credentials=True,
+    allow_methods=["*"], # Allows all HTTP methods.
+    allow_headers=["*"], # Allows all headers.
 )
 
-# Define the API endpoint
-@app.post("/generate")
-async def generate_brainstorm(request: BrainstormRequest):
-    """
-    Takes a concept from the user and uses the fast Llama model to brainstorm related ideas.
-    """
-    try:
-        model_identifier = "meta-llama/llama-3.1-8b-instruct"
+client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=os.getenv("OPENROUTER_API_KEY"))
 
+@app.post("/generate")
+async def generate_response(request: AgentRequest):
+    try:
         completion = client.chat.completions.create(
-          model=model_identifier,
+          model="meta-llama/llama-3.1-8b-instruct",
           messages=[
-            {
-              "role": "system",
-              "content": "You are a creative brainstorming assistant. You generate three related ideas based on the user's concept. Return only a clear, concise list.",
-            },
-            {
-              "role": "user",
-              "content": f"Generate three related ideas for the concept '{request.prompt}'.",
-            },
+            {"role": "system", "content": "You are a creative brainstorming assistant. Generate three related ideas. Each idea must be a short title, no more than 5-7 words. Use a numbered list."},
+            {"role": "user", "content": request.prompt},
           ],
         )
-        response_text = completion.choices[0].message.content
-        return {"response": response_text}
+        return {"response": completion.choices[0].message.content}
     except Exception as e:
         return {"error": str(e)}
