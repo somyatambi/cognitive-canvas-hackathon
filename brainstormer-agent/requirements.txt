@@ -1,0 +1,5 @@
+# cognitive-canvas-backend/brainstormer-agent/requirements.txt
+fastapi
+uvicorn
+openai
+pydantic
