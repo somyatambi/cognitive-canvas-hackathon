@@ -5,7 +5,7 @@ from openai import OpenAI
 
 # Pydantic model for the request body to ensure data is in the expected format
 class BrainstormRequest(BaseModel):
-    concept: str
+    prompt: str
 
 # Initialize the FastAPI app
 app = FastAPI()
@@ -34,7 +34,7 @@ async def generate_brainstorm(request: BrainstormRequest):
             },
             {
               "role": "user",
-              "content": f"Generate three related ideas for the concept '{request.concept}'.",
+              "content": f"Generate three related ideas for the concept '{request.prompt}'.",
             },
           ],
         )

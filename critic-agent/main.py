@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 
 class CriticRequest(BaseModel):
-    idea: str
+    prompt: str
 
 app = FastAPI()
 
@@ -30,7 +30,7 @@ async def generate_criticism(request: CriticRequest):
             },
             {
               "role": "user",
-              "content": f"Business Idea: {request.idea}",
+              "content": f"Business Idea: {request.prompt}",
             },
           ],
         )
