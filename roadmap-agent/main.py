@@ -1,10 +1,9 @@
-# cognitive-canvas-hackathon/roadmap-agent/main.py
-
 import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse # <-- IMPORT THIS
 
 class AgentRequest(BaseModel):
     prompt: str
@@ -21,6 +20,7 @@ app.add_middleware(
 
 client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=os.getenv("OPENROUTER_API_KEY"))
 
+# This is the same generic async generator function
 async def stream_generator(prompt: str, model_identifier: str, system_prompt: str):
     try:
         stream = client.chat.completions.create(
@@ -41,23 +41,9 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
 
 @app.post("/generate")
 async def generate_response(request: AgentRequest):
-    try:
-        # We use the powerful reasoning model for this task
-        model_identifier = "openai/gpt-oss-120b"
-
-        completion = client.chat.completions.create(
-          model=model_identifier,
-          messages=[
-            {
-              "role": "system",
-              "content": "You are an expert project manager. Your task is to take a business idea and generate a 3-4 phase implementation roadmap. Respond ONLY with a numbered list. Each item in the list MUST follow the exact format: Phase X: [Title] :: [Description]",
-            },
-            {
-              "role": "user",
-              "content": f"The business idea is: '{request.prompt}'",
-            },
-          ],
-        )
-        return {"response": completion.choices[0].message.content}
-    except Exception as e:
-        return {"error": str(e)}
+    # Set the specific model and prompt for THIS agent
+    model = "openai/gpt-oss-120b"
+    system_prompt = "You are an expert project manager. Your task is to generate a 3-4 phase implementation roadmap. Respond ONLY with a numbered list. DO NOT write any introductory or concluding text. Each item in the list MUST follow the exact format: Phase X: [Title] :: [Description]"
+    
+    # Return a StreamingResponse that calls the generator
+    return StreamingResponse(stream_generator(request.prompt, model, system_prompt), media_type='text/plain')

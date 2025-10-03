@@ -1,11 +1,9 @@
-# cognitive-canvas-hackathon/brainstormer-agent/main.py (UPDATED FOR STREAMING)
-
 import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse # <-- IMPORT THIS
+from fastapi.responses import StreamingResponse
 
 class AgentRequest(BaseModel):
     prompt: str
@@ -22,7 +20,6 @@ app.add_middleware(
 
 client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=os.getenv("OPENROUTER_API_KEY"))
 
-# This is an async generator function that will yield the AI's response chunks
 async def stream_generator(prompt: str, model_identifier: str, system_prompt: str):
     try:
         stream = client.chat.completions.create(
@@ -31,7 +28,7 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt},
             ],
-            stream=True, # <-- THIS ENABLES STREAMING
+            stream=True,
         )
         for chunk in stream:
             content = chunk.choices[0].delta.content
@@ -44,6 +41,5 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
 @app.post("/generate")
 async def generate_response(request: AgentRequest):
     model = "meta-llama/llama-3.1-8b-instruct"
-    system_prompt = "You are a creative brainstorming assistant. You generate three related, concise ideas. Each idea should be a short phrase or title, no more than 5-7 words. Use a numbered list."
-    # Return a StreamingResponse, which sends data as it's generated
+    system_prompt = "You are a creative brainstorming assistant. Generate three related ideas. Each idea must be a short title, no more than 5-7 words. Use a numbered list."
     return StreamingResponse(stream_generator(request.prompt, model, system_prompt), media_type='text/plain')
