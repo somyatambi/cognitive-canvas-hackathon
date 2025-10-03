@@ -11,6 +11,11 @@ services:
     env_file:
       - .env # <--- AND ADD THIS
 
+  roadmap-agent:
+      build: ./roadmap-agent
+      env_file:
+        - .env
+
   nginx-gateway:
     image: nginx:latest
     ports:

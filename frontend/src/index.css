@@ -49,3 +49,20 @@ body {
 .context-menu button:hover {
   background: #f4f4f4;
 }
+
+/* Keyframe animation for fading in new nodes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Apply fadeIn animation to new nodes */
+.react-flow__node.new-node {
+  animation: fadeIn 0.3s ease-out;
+}

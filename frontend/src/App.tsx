@@ -6,104 +6,176 @@ import ReactFlow, {
   useEdgesState,
   Controls,
   Background,
-  type Node, // Import the Node type for TypeScript
+  type Node,
   type Connection,
   type Edge,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import axios from 'axios';
+import CustomNode from './CustomNode'; // Make sure your custom node file is named CustomNode.tsx
 
-// The node that appears when the application first loads.
+// Maps the 'custom' type to our CustomNode component
+const nodeTypes = {
+  custom: CustomNode,
+};
+
 const initialNodes: Node[] = [
   {
     id: '1',
-    type: 'input',
-    data: { label: 'My New Business Idea' },
+    type: 'custom',
+    data: {
+      label: 'My New Business Idea',
+      icon: '💡',
+      color: '#ffffff',
+    },
     position: { x: 250, y: 5 },
   },
 ];
 
-// A simple counter to ensure all new nodes have a unique ID.
 let id = 2;
 const getUniqueId = () => `${id++}`;
 
 const App = () => {
-  // These are hooks from the React Flow library to manage the state of our canvas.
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const onConnect = useCallback((params: Connection | Edge) => setEdges((eds: Edge[]) => addEdge(params, eds)), [setEdges]);
-  
-  // This state stores information about the context menu. We use `any` for simplicity in a hackathon.
+  const onConnect = useCallback((params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   const [menu, setMenu] = useState<any>(null);
 
-  // This function is called when you right-click on a node.
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
-      // Prevent the default browser right-click menu
       event.preventDefault();
-
       const pane = (event.target as HTMLElement).closest('.react-flow');
       if (!pane) return;
-      
       const bounds = pane.getBoundingClientRect();
-      const position = {
-        top: event.clientY - bounds.top,
-        left: event.clientX - bounds.left,
-      };
-
-      // Set the menu state with the node's info and position
       setMenu({
         id: node.id,
-        ...position,
+        top: event.clientY - bounds.top,
+        left: event.clientX - bounds.left,
         data: node.data,
+        position: node.position, // Pass position for accurate placement
       });
     },
     [setMenu],
   );
 
-  // This function closes the context menu when you click on the canvas background.
   const onPaneClick = useCallback(() => setMenu(null), [setMenu]);
 
-  // This is the core function that calls our backend AI agents.
-  const handleAgentInvoke = async (agentType: string, sourceNode: any) => {
-    setMenu(null); // Close the context menu
-    
-    // The URL points to our Docker Nginx Gateway.
+  // CORE FUNCTION - NOW WITH STREAMING AND AGENT-TO-AGENT LOGIC
+  const handleAgentInvoke = async (agentType: string, sourceNode: any, customPrompt?: string) => {
+    setMenu(null);
     const endpoint = `http://localhost:8080/${agentType}`;
+    const promptToSend = customPrompt || sourceNode.data.label;
     
-    console.log(`Calling ${agentType} agent for prompt: "${sourceNode.data.label}"`);
+    // --- CREATE THE INITIAL "EMPTY" NODE ---
+    const newNodeId = getUniqueId();
+    let icon = '💡';
+    let color = '#fff';
+    // Determine icon and color based on the primary agent call
+    if (customPrompt) { icon = '💬'; color = '#f3e5f5'; }
+    else if (agentType === 'brainstorm') { icon = '🧠'; color = '#e0f7fa'; }
+    else if (agentType === 'criticize') { icon = '🧐'; color = '#ffebee'; }
+    else if (agentType === 'roadmap') { icon = '🗺️'; color = '#e3f2fd'; }
 
+    const firstNewNode: Node = {
+      id: newNodeId,
+      type: 'custom',
+      className: 'new-node',
+      data: { label: '', icon, color }, // Start with an empty label for streaming
+      position: { x: sourceNode.position.x, y: sourceNode.position.y + 150 },
+    };
+    const firstNewEdge: Edge = { id: `e-${sourceNode.id}-${newNodeId}`, source: sourceNode.id, target: newNodeId, animated: true, type: 'smoothstep' };
+
+    // Render the empty node and edge immediately for instant feedback
+    setNodes((nds) => nds.concat(firstNewNode));
+    setEdges((eds) => eds.concat(firstNewEdge));
+
+    // --- FETCH AND PROCESS THE STREAM ---
     try {
-      // Send the request to the backend using Axios.
-      const response = await axios.post(endpoint, {
-        prompt: sourceNode.data.label 
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: promptToSend }),
       });
 
-      const aiResponseText = response.data.response;
+      if (!response.body) throw new Error("Response has no body");
       
-      // Create a new node object for the AI's response.
-      const newNode: Node = {
-        id: getUniqueId(),
-        data: { label: aiResponseText },
-        position: { x: menu.left, y: menu.top + 50 },
-      };
-      
-      // Create a new edge to connect the original node to the new AI-generated node.
-      const newEdge = {
-        id: `e-${sourceNode.id}-${newNode.id}`,
-        source: sourceNode.id,
-        target: newNode.id,
-        animated: true,
-      };
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let fullResponse = '';
 
-      // Update the state to add the new node and edge, which makes them appear on the canvas.
-      setNodes((nds: Node[]) => nds.concat(newNode));
-      setEdges((eds: Edge[]) => eds.concat(newEdge));
+      // Read from the stream
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        const chunkText = decoder.decode(value);
+        fullResponse += chunkText;
+
+        // Update the node's label in real-time
+        setNodes((currentNodes) =>
+          currentNodes.map((node) =>
+            node.id === newNodeId
+              ? { ...node, data: { ...node.data, label: fullResponse } }
+              : node
+          )
+        );
+      }
+      
+      // --- AGENT-TO-AGENT CONVERSATION (POST-STREAM) ---
+      if (agentType === 'brainstorm' && !customPrompt) {
+        console.log(`Auto-triggering Critic agent for: "${fullResponse}"`);
+        // We can make the second call a streaming one too
+        const criticEndpoint = 'http://localhost:8080/criticize';
+        
+        const criticNodeId = getUniqueId();
+        const criticNode: Node = {
+            id: criticNodeId,
+            type: 'custom',
+            className: 'new-node',
+            data: { label: '', icon: '🧐', color: '#ffebee' },
+            position: { x: firstNewNode.position.x + 450, y: firstNewNode.position.y },
+        };
+        const criticEdge: Edge = { id: `e-${firstNewNode.id}-${criticNodeId}`, source: firstNewNode.id, target: criticNodeId, animated: true, type: 'smoothstep' };
+
+        setNodes((nds) => nds.concat(criticNode));
+        setEdges((eds) => eds.concat(criticEdge));
+
+        const criticResponseStream = await fetch(criticEndpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: fullResponse })
+        });
+        
+        if (!criticResponseStream.body) return;
+        const criticReader = criticResponseStream.body.getReader();
+        let criticFullResponse = '';
+        while (true) {
+            const { value, done } = await criticReader.read();
+            if (done) break;
+            const chunkText = decoder.decode(value);
+            criticFullResponse += chunkText;
+            setNodes((currentNodes) =>
+              currentNodes.map((node) =>
+                node.id === criticNodeId
+                  ? { ...node, data: { ...node.data, label: criticFullResponse } }
+                  : node
+              )
+            );
+        }
+      }
 
     } catch (error) {
       console.error("Error calling AI agent:", error);
       alert("Failed to get a response from the AI agent. Make sure your backend is running!");
     }
+  };
+
+  const handleRefine = () => {
+    if (!menu) return;
+    const followUpQuestion = window.prompt(`Ask a follow-up question about:\n\n"${menu.data.label}"`);
+    if (followUpQuestion) {
+      const detailedPrompt = `Regarding this context: "${menu.data.label}"\n\nMy follow-up question is: "${followUpQuestion}"\n\nProvide a concise answer.`;
+      handleAgentInvoke('brainstorm', { id: menu.id, data: menu.data, position: menu.position }, detailedPrompt);
+    }
+    setMenu(null);
   };
 
   return (
@@ -112,6 +184,7 @@ const App = () => {
         <ReactFlow
           nodes={nodes}
           edges={edges}
+          nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
@@ -123,18 +196,23 @@ const App = () => {
           <Controls />
         </ReactFlow>
 
-        {/* This is our custom context menu */}
         {menu && (
           <div
             style={{ top: menu.top, left: menu.left }}
             className="context-menu"
           >
             <p className="context-menu-header">Node: "{menu.data.label}"</p>
-            <button onClick={() => handleAgentInvoke('brainstorm', {id: menu.id, data: menu.data})}>
+            <button onClick={() => handleAgentInvoke('brainstorm', {id: menu.id, data: menu.data, position: menu.position})}>
               🧠 Brainstorm
             </button>
-            <button onClick={() => handleAgentInvoke('criticize', {id: menu.id, data: menu.data})}>
+            <button onClick={() => handleAgentInvoke('criticize', {id: menu.id, data: menu.data, position: menu.position})}>
               🧐 Criticize
+            </button>
+            <button onClick={handleRefine}>
+              💬 Ask a Question
+            </button>
+            <button onClick={() => handleAgentInvoke('roadmap', {id: menu.id, data: menu.data, position: menu.position})}>
+              🗺️ Generate Roadmap
             </button>
           </div>
         )}

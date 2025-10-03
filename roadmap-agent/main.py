@@ -1,15 +1,16 @@
+# cognitive-canvas-hackathon/roadmap-agent/main.py
+
 import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 from openai import OpenAI
-from fastapi.middleware.cors import CORSMiddleware # <-- 1. IMPORT THIS
+from fastapi.middleware.cors import CORSMiddleware
 
 class AgentRequest(BaseModel):
     prompt: str
 
 app = FastAPI()
 
-# 2. ADD THIS MIDDLEWARE CONFIGURATION
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,16 +38,24 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
     except Exception as e:
         print(f"An error occurred: {e}")
         yield f"Error: {e}"
-        
 
 @app.post("/generate")
 async def generate_response(request: AgentRequest):
     try:
+        # We use the powerful reasoning model for this task
+        model_identifier = "openai/gpt-oss-120b"
+
         completion = client.chat.completions.create(
-          model="openai/gpt-oss-120b",
+          model=model_identifier,
           messages=[
-            {"role": "system", "content": "You are a sharp business analyst. Find the single most critical flaw in an idea and summarize it in a single, impactful sentence of 15-20 words."},
-            {"role": "user", "content": request.prompt},
+            {
+              "role": "system",
+              "content": "You are an expert project manager. Your task is to take a business idea and generate a 3-4 phase implementation roadmap. Respond ONLY with a numbered list. Each item in the list MUST follow the exact format: Phase X: [Title] :: [Description]",
+            },
+            {
+              "role": "user",
+              "content": f"The business idea is: '{request.prompt}'",
+            },
           ],
         )
         return {"response": completion.choices[0].message.content}
