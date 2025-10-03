@@ -16,9 +16,16 @@ services:
       env_file:
         - .env
 
+  # In docker-compose.yml
+  task-agent:
+    build: ./task-agent
+    env_file:
+      - .env
+
   nginx-gateway:
     image: nginx:latest
     ports:
       - "8080:80"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
+

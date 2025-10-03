@@ -6,6 +6,7 @@ import ReactFlow, {
   useEdgesState,
   Controls,
   Background,
+  MarkerType, // <-- Import MarkerType for arrowheads
   type Node,
   type Connection,
   type Edge,
@@ -21,7 +22,12 @@ const initialNodes: Node[] = [
   {
     id: '1',
     type: 'custom',
-    data: { label: 'My New Business Idea', icon: '💡', color: '#ffffff' },
+    data: {
+      label: 'My New Business Idea',
+      icon: '💡',
+      color: '#A855F7', // A nice purple color
+      agentName: 'Starting Point',
+    },
     position: { x: 250, y: 5 },
   },
 ];
@@ -35,6 +41,8 @@ const App = () => {
   const onConnect = useCallback((params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   const [menu, setMenu] = useState<any>(null);
   const [selectionModal, setSelectionModal] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(false); // <-- State for loading indicator
+  const [score, setScore] = useState(0); // <-- State for creativity score
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -58,9 +66,9 @@ const App = () => {
     setSelectionModal(null);
   }, [setMenu, setSelectionModal]);
 
-  // THIS IS THE FULL, WORKING FUNCTION YOU NEED
   const handleAgentInvoke = async (agentType: string, sourceNode: any, customPrompt?: string) => {
     setMenu(null);
+    setIsLoading(true); // <-- Start loading
     const endpoint = `http://localhost:8080/${agentType}`;
     const promptToSend = customPrompt || sourceNode.data.label;
     
@@ -75,24 +83,27 @@ const App = () => {
         phases.forEach((phase: string, index: number) => {
           const [title, description] = phase.split(' :: ');
           const newNodeId = getUniqueId();
-          const newNode: Node = { id: newNodeId, className: 'new-node', type: 'custom', data: { label: `${title.trim()}\n\n${description ? description.trim() : ''}`, icon: '🗺️', color: '#e3f2fd' }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 150 * (index + 1) } };
+          const newNode: Node = { id: newNodeId, className: 'new-node', type: 'custom', data: { label: `${title.trim()}\n\n${description ? description.trim() : ''}`, icon: '🗺️', color: '#3b82f6', agentName: 'Planner' }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 200 * (index + 1) } };
           newNodes.push(newNode);
-          const newEdge: Edge = { id: `e-${previousNodeId}-${newNodeId}`, source: previousNodeId, target: newNodeId, type: 'smoothstep' };
+          const newEdge: Edge = { id: `e-${previousNodeId}-${newNodeId}`, source: previousNodeId, target: newNodeId, type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' } };
           newEdges.push(newEdge);
           previousNodeId = newNodeId;
         });
         setNodes((nds) => nds.concat(newNodes));
         setEdges((eds) => eds.concat(newEdges));
+
       } else {
         const firstNodeId = getUniqueId();
         let icon = '💡';
         let color = '#fff';
-        if (customPrompt) { icon = '💬'; color = '#f3e5f5'; }
-        else if (agentType === 'brainstorm') { icon = '🧠'; color = '#e0f7fa'; }
-        else if (agentType === 'criticize') { icon = '🧐'; color = '#ffebee'; }
+        let agentName = 'Refined Idea';
+        if (customPrompt) { icon = '💬'; color = '#c084fc'; }
+        else if (agentType === 'brainstorm') { icon = '🧠'; color = '#2dd4bf'; agentName = 'Brainstormer'; }
+        else if (agentType === 'criticize') { icon = '🧐'; color = '#f87171'; agentName = 'Critic'; }
+        else if (agentType === 'tasks') { icon = '🔨'; color = '#fbbf24'; agentName = 'Task Manager';}
 
-        const firstNewNode: Node = { id: firstNodeId, type: 'custom', className: 'new-node', data: { label: '', icon, color }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 150 } };
-        const firstNewEdge: Edge = { id: `e-${sourceNode.id}-${firstNodeId}`, source: sourceNode.id, target: firstNodeId, animated: true, type: 'smoothstep' };
+        const firstNewNode: Node = { id: firstNodeId, type: 'custom', className: 'new-node thinking', data: { label: '', icon, color, agentName }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 200 } };
+        const firstNewEdge: Edge = { id: `e-${sourceNode.id}-${firstNodeId}`, source: sourceNode.id, target: firstNodeId, type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' } };
         setNodes((nds) => nds.concat(firstNewNode));
         setEdges((eds) => eds.concat(firstNewEdge));
 
@@ -107,12 +118,16 @@ const App = () => {
           fullResponse += decoder.decode(value);
           setNodes((currentNodes) => currentNodes.map((node) => node.id === firstNodeId ? { ...node, data: { ...node.data, label: fullResponse } } : node));
         }
+        
+        // Remove 'thinking' class after stream is complete
+        setNodes((currentNodes) => currentNodes.map((node) => node.id === firstNodeId ? { ...node, className: 'new-node' } : node));
+        
         if (agentType === 'brainstorm' && !customPrompt) {
             const criticResponseStream = await fetch('http://localhost:8080/criticize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: fullResponse }) });
             if (!criticResponseStream.body) return;
             const criticNodeId = getUniqueId();
-            const criticNode: Node = { id: criticNodeId, type: 'custom', className: 'new-node', data: { label: '', icon: '🧐', color: '#ffebee' }, position: { x: firstNewNode.position.x + 450, y: firstNewNode.position.y } };
-            const criticEdge: Edge = { id: `e-${firstNewNode.id}-${criticNodeId}`, source: firstNewNode.id, target: criticNodeId, animated: true, type: 'smoothstep' };
+            const criticNode: Node = { id: criticNodeId, type: 'custom', className: 'new-node thinking', data: { label: '', icon: '🧐', color: '#f87171', agentName: 'Critic' }, position: { x: firstNewNode.position.x + 400, y: firstNewNode.position.y } };
+            const criticEdge: Edge = { id: `e-${firstNewNode.id}-${criticNodeId}`, source: firstNewNode.id, target: criticNodeId, type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' } };
             setNodes((nds) => nds.concat(criticNode));
             setEdges((eds) => eds.concat(criticEdge));
             const criticReader = criticResponseStream.body.getReader();
@@ -123,11 +138,16 @@ const App = () => {
                 criticFullResponse += decoder.decode(value);
                 setNodes((currentNodes) => currentNodes.map((node) => node.id === criticNodeId ? { ...node, data: { ...node.data, label: criticFullResponse } } : node));
             }
+            // Remove 'thinking' class from critic node
+            setNodes((currentNodes) => currentNodes.map((node) => node.id === criticNodeId ? { ...node, className: 'new-node' } : node));
         }
       }
+      setScore(currentScore => currentScore + 10);
     } catch (error) {
       console.error("Error calling AI agent:", error);
       alert("Failed to get a response from the AI agent. Make sure your backend is running!");
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -146,8 +166,8 @@ const App = () => {
     if (!selectionModal && !menu) return;
     const sourceNode = selectionModal ? selectionModal.sourceNode : menu;
     const cleanedLabel = selectedIdea.replace(/^\d+\.\s*/, '').trim();
-    const newNode: Node = { id: getUniqueId(), type: 'custom', className: 'new-node', data: { label: cleanedLabel, icon: '🎯', color: '#fffbe6' }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 150 } };
-    const newEdge: Edge = { id: `e-${sourceNode.id}-${newNode.id}`, source: sourceNode.id, target: newNode.id, type: 'smoothstep' };
+    const newNode: Node = { id: getUniqueId(), type: 'custom', className: 'new-node', data: { label: cleanedLabel, icon: '🎯', color: '#facc15', agentName: 'Focused Idea' }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 200 } };
+    const newEdge: Edge = { id: `e-${sourceNode.id}-${newNode.id}`, source: sourceNode.id, target: newNode.id, type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' } };
     setNodes((nds) => nds.concat(newNode));
     setEdges((eds) => eds.concat(newEdge));
     setSelectionModal(null);
@@ -155,6 +175,9 @@ const App = () => {
 
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
+      <div className="hud">
+        <span>🎨 Creativity Score: {score}</span>
+      </div>
       <ReactFlowProvider>
         <ReactFlow
           nodes={nodes}
@@ -171,6 +194,13 @@ const App = () => {
           <Controls />
         </ReactFlow>
 
+        {isLoading && (
+            <div className="loading-overlay">
+                <div className="loading-spinner"></div>
+                <span>AI agent is thinking...</span>
+            </div>
+        )}
+
         {menu && (
           <div style={{ top: menu.top, left: menu.left }} className="context-menu">
             <p className="context-menu-header">Node: "{menu.data.label}"</p>
@@ -186,6 +216,11 @@ const App = () => {
             <button onClick={handleSelectIdea}>
               ✨ Select & Expand Idea
             </button>
+            {menu && menu.data.icon === '🗺️' && (
+              <button onClick={() => handleAgentInvoke('tasks', {id: menu.id, data: menu.data, position: menu.position})}>
+                🔨 Break Down Task
+              </button>
+            )}
           </div>
         )}
         
@@ -209,5 +244,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;

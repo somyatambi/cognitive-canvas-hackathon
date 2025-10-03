@@ -1,35 +1,25 @@
 import { Handle, Position, type NodeProps } from 'reactflow';
+import './index.css'; // Make sure your css is imported
 
-// Define the data structure for your custom node
-export interface CustomNodeData {
+// Define a type for the data prop for better TypeScript support
+type CustomNodeData = {
   label: string;
   icon: string;
   color: string;
-}
+  agentName: string;
+};
 
-// Custom Node Component
 const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
   return (
-    <div
-      style={{
-        backgroundColor: data.color,
-        padding: '10px',
-        borderRadius: '8px',
-        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-      }}
-    >
-      {/* Handle for top (target) connections */}
+    <div className="custom-node" style={{ borderTop: `4px solid ${data.color}` }}>
       <Handle type="target" position={Position.Top} />
-
-      {/* Display emoji icon next to text label */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span role="img" aria-label="icon">
-          {data.icon}
-        </span>
-        <span>{data.label}</span>
+      <div className="custom-node-header">
+        <span className="custom-node-icon">{data.icon}</span>
+        <span className="custom-node-agent-name">{data.agentName}</span>
       </div>
-
-      {/* Handle for bottom (source) connections */}
+      <div className="custom-node-content">
+        {data.label}
+      </div>
       <Handle type="source" position={Position.Bottom} />
     </div>
   );
