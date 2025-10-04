@@ -13,9 +13,11 @@ import ReactFlow, {
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
+import TaskNode from './TaskNode';
 
 const nodeTypes = {
   custom: CustomNode,
+  tasks: TaskNode,
 };
 
 const initialNodes: Node[] = [
@@ -68,41 +70,172 @@ const App = () => {
 
   const handleAgentInvoke = async (agentType: string, sourceNode: any, customPrompt?: string) => {
     setMenu(null);
-    setIsLoading(true); // <-- Start loading
+    setIsLoading(true);
     const endpoint = `http://localhost:8080/${agentType}`;
     const promptToSend = customPrompt || sourceNode.data.label;
     
     try {
       if (agentType === 'roadmap') {
-        const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: promptToSend }) });
-        const aiResponseText = await response.text();
-        const phases = aiResponseText.split('\n').filter(line => /^\d/.test(line.trim()));
+        // Stream the roadmap response
+        const response = await fetch(endpoint, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' }, 
+          body: JSON.stringify({ prompt: promptToSend }) 
+        });
+        
+        if (!response.ok) {
+          throw new Error(`Roadmap request failed: ${response.status}`);
+        }
+        
+        if (!response.body) throw new Error("Response has no body");
+        
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
+        
+        // Read the stream completely first
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          fullResponse += decoder.decode(value);
+        }
+        
+        console.log('Roadmap full response:', fullResponse);
+        
+        // Now parse the complete response - look for "Phase" lines
+        const phases = fullResponse.split('\n').filter(line => /^Phase\s+\d+:/i.test(line.trim()));
+        
+        console.log('Parsed phases:', phases);
+        
+        if (phases.length === 0) {
+          throw new Error('No phases found in roadmap response');
+        }
+        
         let previousNodeId = sourceNode.id;
         const newNodes: Node[] = [];
         const newEdges: Edge[] = [];
+        
         phases.forEach((phase: string, index: number) => {
-          const [title, description] = phase.split(' :: ');
+          const parts = phase.split('::');
+          const title = parts[0]?.trim() || `Phase ${index + 1}`;
+          const description = parts[1]?.trim() || '';
+          
           const newNodeId = getUniqueId();
-          const newNode: Node = { id: newNodeId, className: 'new-node', type: 'custom', data: { label: `${title.trim()}\n\n${description ? description.trim() : ''}`, icon: '🗺️', color: '#3b82f6', agentName: 'Planner' }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 200 * (index + 1) } };
+          const newNode: Node = { 
+            id: newNodeId, 
+            className: 'new-node', 
+            type: 'custom', 
+            data: { 
+              label: `${title}\n\n${description}`, 
+              icon: '🗺️', 
+              color: '#3b82f6', 
+              agentName: 'Roadmap' 
+            }, 
+            position: { x: sourceNode.position.x, y: sourceNode.position.y + 200 * (index + 1) } 
+          };
           newNodes.push(newNode);
-          const newEdge: Edge = { id: `e-${previousNodeId}-${newNodeId}`, source: previousNodeId, target: newNodeId, type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' } };
+          
+          const newEdge: Edge = { 
+            id: `e-${previousNodeId}-${newNodeId}`, 
+            source: previousNodeId, 
+            target: newNodeId, 
+            type: 'smoothstep', 
+            markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' } 
+          };
           newEdges.push(newEdge);
           previousNodeId = newNodeId;
         });
+        
         setNodes((nds) => nds.concat(newNodes));
         setEdges((eds) => eds.concat(newEdges));
+
+      } else if (agentType === 'pitchdeck') {
+        // Special handling for pitch deck: collect all roadmap nodes and connect them
+        const roadmapNodes = nodes.filter(node => node.data.icon === '🗺️');
+        
+        if (roadmapNodes.length === 0) {
+          throw new Error('No roadmap found. Generate a roadmap first!');
+        }
+        
+        // Calculate pitch deck position (below all roadmap nodes, centered)
+        const avgX = roadmapNodes.reduce((sum, node) => sum + node.position.x, 0) / roadmapNodes.length;
+        const maxY = Math.max(...roadmapNodes.map(node => node.position.y));
+        
+        const pitchDeckNodeId = getUniqueId();
+        const pitchDeckNode: Node = { 
+          id: pitchDeckNodeId, 
+          type: 'custom', 
+          className: 'new-node thinking', 
+          data: { 
+            label: '', 
+            icon: '📊', 
+            color: '#f59e0b', 
+            agentName: 'Pitch Deck' 
+          }, 
+          position: { x: avgX, y: maxY + 250 } 
+        };
+        
+        // Create edges from ALL roadmap nodes to pitch deck
+        const pitchDeckEdges: Edge[] = roadmapNodes.map(roadmapNode => ({
+          id: `e-${roadmapNode.id}-${pitchDeckNodeId}`,
+          source: roadmapNode.id,
+          target: pitchDeckNodeId,
+          type: 'smoothstep',
+          markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' }
+        }));
+        
+        setNodes((nds) => nds.concat(pitchDeckNode));
+        setEdges((eds) => eds.concat(pitchDeckEdges));
+        
+        // Gather context from all roadmap nodes
+        const roadmapContext = roadmapNodes.map(node => node.data.label).join('\n\n');
+        const pitchPrompt = `Based on this roadmap:\n\n${roadmapContext}\n\nCreate a compelling investor pitch deck.`;
+        
+        // Stream the pitch deck response
+        const response = await fetch(endpoint, { 
+          method: 'POST', 
+          headers: { 'Content-Type': 'application/json' }, 
+          body: JSON.stringify({ prompt: pitchPrompt }) 
+        });
+        
+        if (!response.body) throw new Error("Response has no body");
+        
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullResponse = '';
+        
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          fullResponse += decoder.decode(value);
+          setNodes((currentNodes) => currentNodes.map((node) => 
+            node.id === pitchDeckNodeId ? { ...node, data: { ...node.data, label: fullResponse } } : node
+          ));
+        }
+        
+        // Remove 'thinking' class and add download button
+        setNodes((currentNodes) => currentNodes.map((node) => 
+          node.id === pitchDeckNodeId ? { 
+            ...node, 
+            className: 'new-node',
+            data: { ...node.data, label: fullResponse, downloadable: true, pitchDeckId: pitchDeckNodeId }
+          } : node
+        ));
 
       } else {
         const firstNodeId = getUniqueId();
         let icon = '💡';
         let color = '#fff';
         let agentName = 'Refined Idea';
+        let nodeType = 'custom';
+        
         if (customPrompt) { icon = '💬'; color = '#c084fc'; }
         else if (agentType === 'brainstorm') { icon = '🧠'; color = '#2dd4bf'; agentName = 'Brainstormer'; }
         else if (agentType === 'criticize') { icon = '🧐'; color = '#f87171'; agentName = 'Critic'; }
-        else if (agentType === 'tasks') { icon = '🔨'; color = '#fbbf24'; agentName = 'Task Manager';}
+        else if (agentType === 'tasks') { icon = '✅'; color = '#10b981'; agentName = 'Action Plan'; nodeType = 'tasks'; }
+        else if (agentType === 'pitchdeck') { icon = '📊'; color = '#f59e0b'; agentName = 'Pitch Deck'; }
 
-        const firstNewNode: Node = { id: firstNodeId, type: 'custom', className: 'new-node thinking', data: { label: '', icon, color, agentName }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 200 } };
+        const firstNewNode: Node = { id: firstNodeId, type: nodeType, className: 'new-node thinking', data: { label: '', icon, color, agentName }, position: { x: sourceNode.position.x, y: sourceNode.position.y + 200 } };
         const firstNewEdge: Edge = { id: `e-${sourceNode.id}-${firstNodeId}`, source: sourceNode.id, target: firstNodeId, type: 'smoothstep', markerEnd: { type: MarkerType.ArrowClosed, color: '#a1a1aa' } };
         setNodes((nds) => nds.concat(firstNewNode));
         setEdges((eds) => eds.concat(firstNewEdge));
@@ -175,8 +308,15 @@ const App = () => {
 
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
+      <div className="app-header">
+        <h1 className="app-title">
+          <span className="title-icon">🎨</span>
+          Cognitive Canvas
+          <span className="title-subtitle">AI-Powered Idea Studio</span>
+        </h1>
+      </div>
       <div className="hud">
-        <span>🎨 Creativity Score: {score}</span>
+        <span>💡 Creativity Score: {score}</span>
       </div>
       <ReactFlowProvider>
         <ReactFlow
@@ -203,22 +343,29 @@ const App = () => {
 
         {menu && (
           <div style={{ top: menu.top, left: menu.left }} className="context-menu">
-            <p className="context-menu-header">Node: "{menu.data.label}"</p>
+            <p className="context-menu-header">Actions</p>
             <button onClick={() => handleAgentInvoke('brainstorm', {id: menu.id, data: menu.data, position: menu.position})}>
-              🧠 Brainstorm
+              🧠 Brainstorm Ideas
             </button>
+            {menu.data.icon === '🧠' && (
+              <button onClick={handleSelectIdea}>
+                ✨ Select & Expand Idea
+              </button>
+            )}
             <button onClick={() => handleAgentInvoke('criticize', {id: menu.id, data: menu.data, position: menu.position})}>
               🧐 Criticize
             </button>
             <button onClick={() => handleAgentInvoke('roadmap', {id: menu.id, data: menu.data, position: menu.position})}>
               🗺️ Generate Roadmap
             </button>
-            <button onClick={handleSelectIdea}>
-              ✨ Select & Expand Idea
-            </button>
-            {menu && menu.data.icon === '🗺️' && (
+            {menu.data.icon === '🗺️' && (
               <button onClick={() => handleAgentInvoke('tasks', {id: menu.id, data: menu.data, position: menu.position})}>
-                🔨 Break Down Task
+                ✅ Break Down Tasks
+              </button>
+            )}
+            {menu.data.icon === '🗺️' && (
+              <button onClick={() => handleAgentInvoke('pitchdeck', {id: menu.id, data: menu.data, position: menu.position})}>
+                📊 Generate Pitch Deck
               </button>
             )}
           </div>
@@ -239,6 +386,16 @@ const App = () => {
             </div>
           </div>
         )}
+
+        {/* Sponsor Tech Badge Footer */}
+        <div className="sponsor-footer">
+          <span className="sponsor-label">Powered by</span>
+          <div className="sponsor-badges">
+            <span className="sponsor-badge meta">Meta Llama</span>
+            <span className="sponsor-badge cerebras">Cerebras AI</span>
+            <span className="sponsor-badge docker">Docker MCP</span>
+          </div>
+        </div>
 
       </ReactFlowProvider>
     </div>

@@ -43,7 +43,26 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
 async def generate_response(request: AgentRequest):
     # Set the specific model and prompt for THIS agent
     model = "openai/gpt-oss-120b"
-    system_prompt = "You are a sharp business analyst. Find the single most critical flaw in an idea and summarize it in a single, impactful sentence of 15-20 words."
+    system_prompt = """You are a constructive critic with deep business acumen and strategic thinking.
+
+Analyze the given idea and provide:
+1. 💪 Key Strengths (2-3 bullet points of what makes this compelling)
+2. ⚠️ Critical Challenges (2-3 realistic obstacles or risks)
+3. 💡 Strategic Recommendation (one actionable insight to strengthen the idea)
+
+Be honest but constructive. Focus on actionable insights, not just problems. Keep your total response under 150 words.
+
+Format:
+💪 Strengths:
+- [strength 1]
+- [strength 2]
+
+⚠️ Challenges:
+- [challenge 1]
+- [challenge 2]
+
+💡 Recommendation:
+[One powerful strategic suggestion]"""
     
     # Return a StreamingResponse that calls the generator
     return StreamingResponse(stream_generator(request.prompt, model, system_prompt), media_type='text/plain')

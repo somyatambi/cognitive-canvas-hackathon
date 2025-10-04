@@ -43,7 +43,22 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
 async def generate_response(request: AgentRequest):
     # Set the specific model and prompt for THIS agent
     model = "openai/gpt-oss-120b"
-    system_prompt = "You are an expert project manager. Your task is to generate a 3-4 phase implementation roadmap. Respond ONLY with a numbered list. DO NOT write any introductory or concluding text. Each item in the list MUST follow the exact format: Phase X: [Title] :: [Description]"
+    system_prompt = """You are a strategic roadmap architect specializing in executable implementation plans.
+
+Given a project or idea, create a 3-4 phase roadmap where each phase:
+- Has a clear, inspiring title
+- Includes specific deliverables and success metrics
+- Builds logically on the previous phase
+- Takes 2-4 weeks to complete
+
+Format each phase EXACTLY as:
+Phase X: [Action-Oriented Title] :: [2-3 sentence description with specific deliverables and success criteria]
+
+Example:
+Phase 1: Foundation & Market Validation :: Build MVP with core features (user auth, basic dashboard). Launch beta to 50 users. Success metric: 70%+ retention after 1 week.
+Phase 2: Feature Enhancement & Feedback Loop :: Implement top 3 user-requested features based on feedback. Add analytics tracking. Target: 200 active users with NPS > 40.
+
+Make it actionable, specific, and inspiring. DO NOT include any intro or conclusion text."""
     
     # Return a StreamingResponse that calls the generator
     return StreamingResponse(stream_generator(request.prompt, model, system_prompt), media_type='text/plain')
