@@ -4,7 +4,7 @@
 
 ![Meta Llama](https://img.shields.io/badge/Meta-Llama_3.3_70B-0081FB?style=for-the-badge&logo=meta)
 ![Cerebras](https://img.shields.io/badge/Cerebras-AI_Inference-00D4AA?style=for-the-badge)
-![Docker](https://img.shields.io/badge/Docker-MCP_Gateway-2496ED?style=for-the-badge&logo=docker)
+![Docker](https://img.shields.io/badge/Docker-Microservices-2496ED?style=for-the-badge&logo=docker)
 
 ## 🎯 Problem Statement
 
@@ -44,8 +44,8 @@ Unlike traditional chatbots, Cognitive Canvas provides a **spatial thinking envi
                   │
                   ▼
 ┌─────────────────────────────────────────────────────────────┐
-│              Docker MCP Gateway (Port 8080)                  │
-│  • Model Context Protocol implementation                    │
+│         Nginx API Gateway (Port 8080)                        │
+│  • Containerized microservices architecture                 │
 │  • Intelligent routing to specialized agents                │
 │  • Streaming response orchestration                         │
 └─────────────────┬───────────────────────────────────────────┘
@@ -78,12 +78,12 @@ Unlike traditional chatbots, Cognitive Canvas provides a **spatial thinking envi
 - 🐍 Python 3.11 + FastAPI
 - 🤖 **Meta Llama 3.3 70B** (via OpenRouter) - Creative brainstorming, critique, roadmaps & pitch decks
 - 🚀 **Cerebras AI** (Llama 3.1 8B) - Ultra-fast task generation (20x faster inference!)
-- 🐳 **Docker + MCP Gateway** - Microservices orchestration (5 agents!)
+- 🐳 **Docker + Nginx Gateway** - Microservices orchestration (5 agents!)
 
 **Why This Stack?**
 - **Meta Llama**: Best-in-class open-source LLM for nuanced creative tasks
 - **Cerebras**: Specialized hardware for blazing-fast structured output
-- **Docker MCP**: Clean agent isolation with intelligent routing
+- **Docker**: Clean agent isolation with containerized microservices
 - **React Flow**: Visual thinking requires spatial representation
 
 ---
@@ -160,8 +160,8 @@ CEREBRAS_API_KEY=your_cerebras_key_here
 docker-compose up --build
 ```
 This starts:
-- 4 AI agent services (brainstormer, critic, roadmap, task)
-- Nginx MCP Gateway on `http://localhost:8080`
+- 5 AI agent services (brainstormer, critic, roadmap, task, pitch-deck)
+- Nginx API Gateway on `http://localhost:8080`
 
 4. **Start the frontend**
 ```bash
@@ -214,15 +214,15 @@ Frontend runs on `http://localhost:5173`
 
 **Technical Highlight**: By combining Llama 3.3 70B (creativity) with Cerebras (speed), we showcase intelligent model selection based on use case requirements.
 
-### ✅ Docker MCP Gateway (Required for Docker Prize)
-- **Implementation**: Custom FastAPI-based Model Context Protocol gateway
-- **Usage**: Orchestrates 4 microservices with intelligent routing
-- **Why Docker MCP?**:
-  - Clean agent isolation
-  - Scalable architecture
+### ✅ Docker Containerized Microservices (Required for Docker Prize)
+- **Implementation**: Nginx-based API gateway with FastAPI microservices
+- **Usage**: Orchestrates 5 containerized AI agents with intelligent routing
+- **Why Docker?**:
+  - Clean agent isolation via containers
+  - Scalable microservices architecture
   - Production-ready deployment pattern
 
-**Technical Highlight**: Our MCP Gateway routes requests to specialized agents, implementing a microservices pattern that scales horizontally.
+**Technical Highlight**: Our Nginx gateway routes requests to specialized containerized agents, implementing a microservices pattern that scales horizontally.
 
 ---
 
@@ -274,7 +274,7 @@ Frontend runs on `http://localhost:5173`
 ### Technical Growth
 - **Multi-Provider Orchestration**: Learned to combine different AI providers (OpenRouter, Cerebras) based on task requirements
 - **Streaming Architecture**: Implemented real-time server-sent events for smooth UX
-- **Docker MCP Gateway**: Built production-ready microservices routing
+- **Docker Microservices**: Built production-ready containerized architecture
 - **React Flow Mastery**: Created custom nodes with intelligent content parsing
 
 ### Prompt Engineering

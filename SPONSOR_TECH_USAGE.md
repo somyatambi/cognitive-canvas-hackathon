@@ -1,6 +1,6 @@
 # 🏆 Sponsor Technology Usage
 
-> Detailed documentation of how Cognitive Canvas uses Meta Llama, Cerebras AI, and Docker MCP to create a winning hackathon project.
+> Detailed documentation of how Cognitive Canvas uses Meta Llama, Cerebras AI, and Docker to create a winning hackathon project.
 
 ---
 
@@ -10,9 +10,9 @@ Cognitive Canvas uses **all three sponsor technologies** to qualify for maximum 
 
 | Sponsor | Technology Used | Where | Why |
 |---------|----------------|-------|-----|
-| **Meta** | Llama 3.3 70B Instruct | Brainstormer, Critic, Roadmap agents | Best open-source LLM for creative & analytical tasks |
+| **Meta** | Llama 3.3 70B Instruct | Brainstormer, Critic, Roadmap, Pitch Deck agents | Best open-source LLM for creative & analytical tasks |
 | **Cerebras** | Llama 3.1 8B (Cerebras-optimized) | Task Agent | 20x faster inference for structured output |
-| **Docker** | MCP Gateway + Microservices | All backend services | Clean agent isolation & production-ready architecture |
+| **Docker** | Containerized Microservices Gateway | All backend services | Clean agent isolation & production-ready architecture |
 
 ---
 
@@ -212,17 +212,17 @@ Streaming response back to UI
 
 ---
 
-## 🐳 Docker MCP Gateway Integration
+## 🐳 Docker Containerized Microservices Gateway
 
-### What is MCP (Model Context Protocol)?
+### Architecture Overview
 
-MCP is an emerging standard for routing AI requests to appropriate models based on context. Our implementation uses **Docker + Nginx** to create a lightweight, production-ready gateway.
+Our application uses **Docker Compose** to orchestrate 6 containerized services in a microservices architecture, with Nginx as an API gateway for intelligent request routing.
 
 ### Architecture
 
 ```
 ┌─────────────────────────────────────────────┐
-│        Nginx MCP Gateway (:8080)            │
+│        Nginx API Gateway (:8080)            │
 │  - Single entry point for all agents        │
 │  - Intelligent routing based on path        │
 │  - Streaming-friendly configuration         │
@@ -322,7 +322,7 @@ services:
     environment:
       - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}  # Different provider!
   
-  # MCP Gateway (Single entry point)
+  # API Gateway (Single entry point)
   nginx-gateway:
     image: nginx:latest
     ports:
@@ -343,11 +343,11 @@ services:
 
 ---
 
-### Docker MCP: By The Numbers
+### Docker: By The Numbers
 
 | Metric | Value | Why It Matters |
 |--------|-------|----------------|
-| **Services** | 5 containers | 4 agents + 1 gateway |
+| **Services** | 6 containers | 5 agents + 1 nginx gateway |
 | **Build Time** | ~45 seconds | Multi-stage builds optimized |
 | **Startup Time** | ~10 seconds | All services up and running |
 | **Memory Usage** | ~800MB total | Lightweight Python containers |
@@ -358,7 +358,7 @@ services:
 ## 🎯 Sponsor Tech Usage Summary
 
 ### Meta Llama ✅
-- **3 out of 4 agents** use Llama models
+- **4 out of 5 agents** use Llama models
 - **Llama 3.3 70B** for creative, analytical, and strategic tasks
 - **Advanced prompt engineering** with few-shot learning
 - **95% output quality** with minimal regeneration
@@ -369,8 +369,8 @@ services:
 - **Multi-provider orchestration** demonstrates technical sophistication
 - **200ms avg response time** for instant user experience
 
-### Docker MCP ✅
-- **Nginx-based MCP Gateway** for intelligent routing
+### Docker ✅
+- **Nginx-based API Gateway** for intelligent routing
 - **Microservices architecture** with clean isolation
 - **Streaming-friendly configuration** for real-time responses
 - **Production-ready** with one-command deployment
@@ -382,7 +382,7 @@ services:
 ### For Meta Prize
 1. ✅ Uses Llama 3.3 70B (latest open-source model)
 2. ✅ Advanced prompt engineering (few-shot learning)
-3. ✅ 75% of agents powered by Meta Llama
+3. ✅ 80% of agents powered by Meta Llama
 4. ✅ Showcases Llama's strengths: creativity, analysis, planning
 
 ### For Cerebras Prize
@@ -392,8 +392,8 @@ services:
 4. ✅ Showcases Cerebras' speed advantage (20x faster)
 
 ### For Docker Prize
-1. ✅ MCP Gateway implementation with Nginx
-2. ✅ Clean microservices architecture
+1. ✅ Containerized microservices with Nginx gateway
+2. ✅ Clean separation of 5 AI agent services
 3. ✅ Production-ready Docker Compose setup
 4. ✅ Streaming response support
 
@@ -415,7 +415,7 @@ services:
 
 ### vs Projects with Monolithic Backend
 - ✅ We use **microservices** (scalable, maintainable)
-- ✅ Docker MCP demonstrates production-ready architecture
+- ✅ Docker demonstrates production-ready architecture
 
 ---
 
@@ -431,10 +431,10 @@ services:
 2. **8B is Enough:** For structured output, smaller models work great
 3. **API Simplicity:** Drop-in replacement for OpenAI SDK
 
-### What We Learned About Docker MCP
-1. **Nginx Rocks:** Sub-5ms routing overhead
+### What We Learned About Docker
+1. **Nginx Rocks:** Sub-5ms routing overhead for microservices
 2. **Streaming Config:** `proxy_buffering off` is critical
-3. **Compose Power:** One command deploys 5 services
+3. **Compose Power:** One command deploys 6 containerized services
 
 ---
 

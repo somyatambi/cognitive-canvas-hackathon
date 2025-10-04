@@ -42,7 +42,7 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
 @app.post("/generate")
 async def generate_response(request: AgentRequest):
     # Set the specific model and prompt for THIS agent
-    model = "openai/gpt-oss-120b"
+    model = "meta-llama/llama-3.3-70b-instruct"  # Using Meta Llama 3.3 70B for analytical critique
     system_prompt = """You are a constructive critic with deep business acumen and strategic thinking.
 
 Analyze the given idea and provide:

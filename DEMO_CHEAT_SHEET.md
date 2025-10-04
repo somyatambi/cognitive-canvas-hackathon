@@ -57,7 +57,7 @@ http://localhost:5173
 > "Cognitive Canvas: AI agents that brainstorm, critique, plan, and create tasks - all on a visual canvas."
 
 ### Tech Stack (5 seconds)
-> "Meta Llama 3.3 70B for creativity, Cerebras for speed, Docker MCP for orchestration."
+> "Meta Llama 3.3 70B for creativity, Cerebras for speed, Docker microservices for orchestration."
 
 ### Unique (5 seconds)
 > "Unlike chatbots, we use a visual canvas. Unlike single-AI tools, we use specialized agents."
@@ -72,7 +72,7 @@ http://localhost:5173
 ### When to mention Meta Llama
 - ✅ When ideas appear: "Powered by Meta Llama 3.3 70B"
 - ✅ During critique: "Llama provides nuanced, balanced feedback"
-- ✅ Total usage: "3 out of 4 agents use Meta Llama"
+- ✅ Total usage: "4 out of 5 agents use Meta Llama"
 
 ### When to mention Cerebras
 - ✅ When tasks appear: "Cerebras generates these in 200 milliseconds!"
@@ -80,7 +80,7 @@ http://localhost:5173
 - ✅ Strategy: "Right model for the task - Cerebras for structured output"
 
 ### When to mention Docker
-- ✅ Architecture: "4 microservices orchestrated by Docker MCP Gateway"
+- ✅ Architecture: "5 microservices orchestrated via containerized architecture"
 - ✅ Deployment: "One command: docker-compose up"
 - ✅ Production: "Production-ready architecture, not just a prototype"
 
@@ -159,7 +159,7 @@ http://localhost:5173
 
 ## 🎤 Elevator Pitch (30 seconds)
 
-> "Cognitive Canvas solves the blank canvas problem - that overwhelming feeling when starting a new project. Instead of a chatbot, we built a visual workspace where 4 specialized AI agents collaborate with you. Meta Llama 3.3 70B brainstorms creative ideas, critiques them, and creates strategic roadmaps. Cerebras AI breaks down phases into actionable tasks 20x faster than traditional inference. All orchestrated through a Docker MCP Gateway for production-ready microservices. From blank canvas to executable plan in under 2 minutes."
+> "Cognitive Canvas solves the blank canvas problem - that overwhelming feeling when starting a new project. Instead of a chatbot, we built a visual workspace where 5 specialized AI agents collaborate with you. Meta Llama 3.3 70B brainstorms creative ideas, critiques them, creates strategic roadmaps, and generates investor pitch decks. Cerebras AI breaks down phases into actionable tasks 20x faster than traditional inference. All orchestrated through containerized microservices for production-ready deployment. From blank canvas to executable plan in under 2 minutes."
 
 ---
 
@@ -172,7 +172,7 @@ http://localhost:5173
 > "Brainstorming is spatial. You need to see ideas side-by-side, connect them, and build on them visually. Chat is linear and conversational - great for questions, not for ideation."
 
 ### "How is this production-ready?"
-> "Docker MCP Gateway provides clean microservice isolation, horizontal scalability, and Nginx routing. We could deploy to Kubernetes tomorrow with minimal changes. Plus, multi-provider AI means no vendor lock-in."
+> "Our Docker-based microservices architecture provides clean agent isolation, horizontal scalability, and Nginx routing. We could deploy to Kubernetes tomorrow with minimal changes. Plus, multi-provider AI means no vendor lock-in."
 
 ### "What's the real-world use case?"
 > "Entrepreneurs starting businesses, students beginning research projects, hackathon teams brainstorming ideas. Anyone who's stared at a blank page not knowing where to start. We give them structure and momentum."

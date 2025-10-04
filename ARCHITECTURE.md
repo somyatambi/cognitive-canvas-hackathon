@@ -5,7 +5,7 @@
 ## Table of Contents
 1. [System Overview](#system-overview)
 2. [Multi-Agent Architecture](#multi-agent-architecture)
-3. [Docker MCP Gateway Design](#docker-mcp-gateway-design)
+3. [Docker Microservices Gateway Design](#docker-microservices-gateway-design)
 4. [Frontend Architecture](#frontend-architecture)
 5. [AI Model Selection Strategy](#ai-model-selection-strategy)
 6. [Streaming Response Pipeline](#streaming-response-pipeline)
@@ -20,7 +20,7 @@ Cognitive Canvas is a **distributed multi-agent system** built on microservices 
 
 ### High-Level Flow
 ```
-User Input → Frontend → MCP Gateway → Specialized Agent → Stream Response → Update Canvas
+User Input → Frontend → API Gateway → Specialized Agent → Stream Response → Update Canvas
 ```
 
 ### Key Design Principles
@@ -73,11 +73,11 @@ async def generate_response(request: AgentRequest):
 
 ---
 
-## Docker MCP Gateway Design
+## Docker Microservices Gateway Design
 
-### What is Model Context Protocol (MCP)?
+### Architecture Overview
 
-MCP is an emerging standard for routing requests to AI models based on context. Our implementation uses **Nginx as a lightweight reverse proxy** to route to specialized agents.
+Our implementation uses **Nginx as a lightweight reverse proxy** to route requests to specialized containerized AI agents, implementing a clean microservices pattern.
 
 ### Gateway Configuration
 
@@ -105,7 +105,7 @@ location /brainstormer/generate {
 }
 ```
 
-### Why Nginx for MCP?
+### Why Nginx for API Gateway?
 
 1. **Low Latency**: Sub-millisecond routing overhead
 2. **Streaming Support**: Native support for chunked transfer encoding
@@ -426,7 +426,7 @@ CDN (Cloudflare)
 - ✅ Sub-second first-byte response time
 - ✅ Smooth UX with progressive content rendering
 
-### 3. Docker MCP Gateway
+### 3. Docker Containerized Microservices
 - ✅ Microservices pattern with clean separation
 - ✅ Production-ready Nginx configuration
 - ✅ One-command deployment (`docker-compose up`)
@@ -507,7 +507,7 @@ async def stream_generator(prompt, model, system_prompt):
 ## Conclusion
 
 Cognitive Canvas demonstrates:
-- ✅ **Production-ready microservices** with Docker MCP
+- ✅ **Production-ready microservices** with Docker containerization
 - ✅ **Advanced AI orchestration** with multi-provider strategy
 - ✅ **Real-time streaming** for optimal UX
 - ✅ **Visual-first design** for spatial thinking
