@@ -20,6 +20,9 @@ const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
   
   // Check if it has structured sections (critic format with emojis)
   const hasStructuredSections = data.label.includes('💪') || data.label.includes('⚠️') || data.label.includes('💡');
+  
+  // Check if it's the new critic format with IDEA blocks
+  const hasSeparateIdeaBlocks = data.label.includes('⚡ IDEA');
 
   const handleDownloadPDF = () => {
     // Create PDF with jsPDF
@@ -89,6 +92,73 @@ const CustomNode = ({ data }: NodeProps<CustomNodeData>) => {
                 );
               }
               return null;
+            })}
+          </div>
+        ) : hasSeparateIdeaBlocks ? (
+          <div className="critic-ideas-container">
+            {data.label.split(/⚡ IDEA/).filter(block => block.trim()).map((block, blockIdx) => {
+              // Skip empty blocks
+              if (!block.trim()) return null;
+              
+              const lines = block.split('\n').filter(l => l.trim());
+              // First line is the idea title/number
+              const ideaTitle = lines[0] || '';
+              
+              // Parse sections within this idea block
+              const strengthsStart = lines.findIndex(l => l.includes('💪'));
+              const challengesStart = lines.findIndex(l => l.includes('⚠️'));
+              const recommendationStart = lines.findIndex(l => l.includes('💡'));
+              
+              const strengths = strengthsStart !== -1 && challengesStart !== -1
+                ? lines.slice(strengthsStart + 1, challengesStart).filter(l => l.trim() && l.startsWith('-'))
+                : [];
+              
+              const challenges = challengesStart !== -1 && recommendationStart !== -1
+                ? lines.slice(challengesStart + 1, recommendationStart).filter(l => l.trim() && l.startsWith('-'))
+                : [];
+              
+              const recommendation = recommendationStart !== -1
+                ? lines.slice(recommendationStart + 1).filter(l => l.trim() && !l.startsWith('-') && !l.includes('⚡')).join(' ')
+                : '';
+              
+              return (
+                <div key={blockIdx} className="critic-idea-block">
+                  <div className="critic-idea-header">
+                    ⚡ IDEA {ideaTitle}
+                  </div>
+                  
+                  {strengths.length > 0 && (
+                    <div className="critic-section section-strengths">
+                      <div className="section-header">💪 Strengths</div>
+                      <div className="section-body">
+                        {strengths.map((item, i) => (
+                          <div key={i} className="section-item">{item}</div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {challenges.length > 0 && (
+                    <div className="critic-section section-challenges">
+                      <div className="section-header">⚠️ Challenges</div>
+                      <div className="section-body">
+                        {challenges.map((item, i) => (
+                          <div key={i} className="section-item">{item}</div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {recommendation && (
+                    <div className="critic-section section-recommendation">
+                      <div className="section-header">💡 Recommendation</div>
+                      <div className="section-body">
+                        <div className="section-item">{recommendation}</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
             })}
           </div>
         ) : hasStructuredSections ? (

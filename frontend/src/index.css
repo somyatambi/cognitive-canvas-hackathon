@@ -611,6 +611,49 @@ body {
   gap: 16px;
 }
 
+/* Critic Ideas Container - for separate idea blocks */
+.critic-ideas-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 4px;
+}
+
+.critic-idea-block {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 12px;
+  padding: 16px;
+  border: 2px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.critic-idea-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  border-color: #cbd5e1;
+}
+
+.critic-idea-header {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 16px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #000000 0%, #000000 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.critic-section {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  border-left: 4px solid #94a3b8;
+}
+
 .content-section {
   padding: 12px;
   border-radius: 10px;
