@@ -90,26 +90,37 @@ Unlike traditional chatbots, Cognitive Canvas provides a **spatial thinking envi
 
 ## 🌟 Key Features
 
-### 1. **Intelligent Multi-Agent Collaboration**
+### 1. **Workspace Management** 💾 (NEW!)
+- **Save Canvases**: Save your work with custom names
+- **Load Anytime**: Browse and load any saved canvas instantly
+- **Multiple Projects**: Organize different business ideas separately
+- **Quick Switching**: Easy context switching between canvases
+- **Delete Old Work**: Clean up unwanted saves
+- **LocalStorage**: All data saved locally in your browser
+
+### 2. **Intelligent Multi-Agent Collaboration**
 Unlike single-model systems, our agents specialize:
 - **Brainstormer** uses Llama 3.3 70B for creative ideation (few-shot learning with strict constraints)
 - **Critic** provides balanced feedback with strengths & challenges
 - **Roadmap** creates strategic phase-based plans
 - **Task** leverages Cerebras for instant actionable breakdowns
+- **Pitch Deck** generates investor-ready 8-slide presentations (NEW!)
 
-### 2. **Visual Canvas Interface**
+### 3. **Visual Canvas Interface**
 - Infinite workspace for non-linear thinking
 - Node-based representation of ideas, critiques, roadmaps, and tasks
 - Visual connections show idea evolution
 - Professional gradient-based design system
+- Innovative side panel for workspace management
 
-### 3. **Smart Workflow Orchestration**
+### 4. **Smart Workflow Orchestration**
 - Context-aware menu options (different actions for different node types)
 - Automatic Brainstormer → Critic conversation flow
 - Seamless "Select & Expand Idea" workflow
 - Task categorization (🚀 Quick Wins | 🎯 Core Tasks | 📈 Growth Goals)
+- PDF export for pitch decks
 
-### 4. **Streaming Real-Time Responses**
+### 5. **Streaming Real-Time Responses**
 - Watch AI agents "think" in real-time
 - No loading spinners - immediate feedback
 - Professional loading overlays with animations

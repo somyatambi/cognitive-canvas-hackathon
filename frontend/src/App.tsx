@@ -14,6 +14,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
 import TaskNode from './TaskNode';
+import WorkspacePanel from './WorkspacePanel';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -43,8 +44,7 @@ const App = () => {
   const onConnect = useCallback((params: Connection | Edge) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   const [menu, setMenu] = useState<any>(null);
   const [selectionModal, setSelectionModal] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(false); // <-- State for loading indicator
-  const [score, setScore] = useState(0); // <-- State for creativity score
+  const [isLoading, setIsLoading] = useState(false);
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -275,7 +275,6 @@ const App = () => {
             setNodes((currentNodes) => currentNodes.map((node) => node.id === criticNodeId ? { ...node, className: 'new-node' } : node));
         }
       }
-      setScore(currentScore => currentScore + 10);
     } catch (error) {
       console.error("Error calling AI agent:", error);
       alert("Failed to get a response from the AI agent. Make sure your backend is running!");
@@ -306,17 +305,37 @@ const App = () => {
     setSelectionModal(null);
   };
 
+  // Workspace management handlers
+  const handleLoadCanvas = (loadedNodes: Node[], loadedEdges: Edge[]) => {
+    setNodes(loadedNodes);
+    setEdges(loadedEdges);
+    // Update the id counter to avoid conflicts
+    const maxId = Math.max(...loadedNodes.map(n => parseInt(n.id) || 0), 1);
+    id = maxId + 1;
+  };
+
+  const handleNewCanvas = () => {
+    setNodes(initialNodes);
+    setEdges([]);
+    id = 2; // Reset ID counter
+  };
+
   return (
     <div style={{ height: '100vh', width: '100vw' }}>
+      {/* Workspace Panel */}
+      <WorkspacePanel 
+        currentNodes={nodes}
+        currentEdges={edges}
+        onLoadCanvas={handleLoadCanvas}
+        onNewCanvas={handleNewCanvas}
+      />
+      
       <div className="app-header">
         <h1 className="app-title">
           <span className="title-icon">🎨</span>
           Cognitive Canvas
           <span className="title-subtitle">AI-Powered Idea Studio</span>
         </h1>
-      </div>
-      <div className="hud">
-        <span>💡 Creativity Score: {score}</span>
       </div>
       <ReactFlowProvider>
         <ReactFlow
