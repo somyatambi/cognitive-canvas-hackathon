@@ -29,16 +29,28 @@ COPY roadmap-agent /app/roadmap-agent
 COPY task-agent /app/task-agent
 COPY pitch-deck-agent /app/pitch-deck-agent
 
-# Create startup script
+# Create startup script with proper error handling
 RUN echo '#!/bin/bash\n\
-cd /app/brainstormer-agent && uvicorn main:app --host 0.0.0.0 --port 8001 &\n\
-cd /app/critic-agent && uvicorn main:app --host 0.0.0.0 --port 8002 &\n\
-cd /app/roadmap-agent && uvicorn main:app --host 0.0.0.0 --port 8003 &\n\
-cd /app/task-agent && uvicorn main:app --host 0.0.0.0 --port 8004 &\n\
-cd /app/pitch-deck-agent && uvicorn main:app --host 0.0.0.0 --port 8005 &\n\
+set -e\n\
+echo "Starting Brainstormer Agent..."\n\
+cd /app/brainstormer-agent && uvicorn main:app --host 0.0.0.0 --port 8001 --log-level info &\n\
+sleep 2\n\
+echo "Starting Critic Agent..."\n\
+cd /app/critic-agent && uvicorn main:app --host 0.0.0.0 --port 8002 --log-level info &\n\
+sleep 2\n\
+echo "Starting Roadmap Agent..."\n\
+cd /app/roadmap-agent && uvicorn main:app --host 0.0.0.0 --port 8003 --log-level info &\n\
+sleep 2\n\
+echo "Starting Task Agent..."\n\
+cd /app/task-agent && uvicorn main:app --host 0.0.0.0 --port 8004 --log-level info &\n\
+sleep 2\n\
+echo "Starting Pitch Deck Agent..."\n\
+cd /app/pitch-deck-agent && uvicorn main:app --host 0.0.0.0 --port 8005 --log-level info &\n\
+sleep 3\n\
+echo "All agents started. Starting nginx..."\n\
 nginx -g "daemon off;"\n\
 ' > /app/start.sh && chmod +x /app/start.sh
 
 EXPOSE 8080
 
-CMD ["/app/start.sh"]
+CMD ["/bin/bash", "/app/start.sh"]
