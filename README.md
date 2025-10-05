@@ -2,22 +2,7 @@
 
 ## 🎯 Problem Statement
 
-**The Blank Canvas Syndrome**: Entrepreneurs, students, and hackathon teams struggle with the overwhelmin## 👥 Team
-
-**Team Name**: The Iterators
-
-**Members**:
-- **Somya Tambi** - [@somyatambi](https://github.com/somyatambi)
-- **Sojas Nayask** - [@sojasnayak](https://github.com/sojasnayak)
-
-**Hackathon**: WeMakeDevs Fullstack GenAI Hackathon 2025
-
----
-
-**📚 Technical Deep Dive**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for implementation details
-
-**🏆 Sponsor Tech Proof**: See [SPONSOR_TECH_USAGE.md](./SPONSOR_TECH_USAGE.md) for detailed integration
-f starting from scratch. Traditional brainstorming tools are either:
+**The Blank Canvas Syndrome**: Entrepreneurs, students, and hackathon teams struggle with the overwhelming challenge of starting from scratch. Traditional brainstorming tools are either:
 - Too rigid (linear chat interfaces)
 - Too isolated (single AI responses without validation)
 - Too abstract (ideas without actionable steps)
@@ -170,11 +155,20 @@ Unlike single-model systems, our agents specialize:
 
 ---
 
-##  Team
+## 👥 Team
 
-Built by **Somya Tambi** and **Sojas Nayask** for the WeMakeDevs Fullstack GenAI Hackathon 2025
+**Team Name**: The Iterators
 
-- GitHub: [@somyatambi](https://github.com/somyatambi)
-- GitHub: [@sojasnayak](https://github.com/sojasnayak)
-- Project Repo: [cognitive-canvas-hackathon](https://github.com/somyatambi/cognitive-canvas-hackathon)
+**Members**:
+- **Somya Tambi** - [@somyatambi](https://github.com/somyatambi)
+- **Sojas Nayask** - [@sojasnayak](https://github.com/sojasnayak)
+
+**Hackathon**: WeMakeDevs Fullstack GenAI Hackathon 2025
+
+---
+
+**📚 Technical Deep Dive**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for implementation details
+
+**🏆 Sponsor Tech Proof**: See [SPONSOR_TECH_USAGE.md](./SPONSOR_TECH_USAGE.md) for detailed integration
+
 
