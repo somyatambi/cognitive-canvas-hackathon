@@ -314,11 +314,12 @@ MIT License - Feel free to build upon this project!
 
 ---
 
-## 👥 Team
+## 👥 Team Name: The Iterators
 
-Built by **Somya Tambi** for the WeMakeDevs Fullstack GenAI Hackathon 2025
+Built by **Somya Tambi** and **Sojas Nayask** for the WeMakeDevs Fullstack GenAI Hackathon 2025
 
 - GitHub: [@somyatambi](https://github.com/somyatambi)
+- GitHub: [@sojasnayak](https://github.com/sojasnayak)
 - Project Repo: [cognitive-canvas-hackathon](https://github.com/somyatambi/cognitive-canvas-hackathon)
 
 ---
