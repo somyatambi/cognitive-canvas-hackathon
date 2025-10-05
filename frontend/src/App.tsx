@@ -4,7 +4,6 @@ import ReactFlow, {
   addEdge,
   useNodesState,
   useEdgesState,
-  Controls,
   Background,
   MarkerType, // <-- Import MarkerType for arrowheads
   type Node,
@@ -15,6 +14,7 @@ import 'reactflow/dist/style.css';
 import CustomNode from './CustomNode';
 import TaskNode from './TaskNode';
 import WorkspacePanel from './WorkspacePanel';
+import ZoomSlider from './ZoomSlider';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -348,10 +348,19 @@ const App = () => {
           onPaneClick={onPaneClick}
           onNodeContextMenu={onNodeContextMenu}
           fitView
+          minZoom={0.2}
+          maxZoom={4}
+          defaultViewport={{ x: 0, y: 0, zoom: 1 }}
         >
-          <Background />
-          <Controls />
+          <Background 
+            gap={20} 
+            size={2} 
+            color="#94a3b8"
+          />
         </ReactFlow>
+
+        {/* Custom Zoom Slider */}
+        <ZoomSlider />
 
         {isLoading && (
             <div className="loading-overlay">

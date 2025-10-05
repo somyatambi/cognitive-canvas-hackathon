@@ -23,10 +23,10 @@ http://localhost:5173
 **Say:** "Starting a project is hard. Cognitive Canvas makes it easy."
 
 **Do:**
-1. Type prompt: `"AI-powered fitness app for busy professionals"`
-2. Click "Brainstorm Ideas"
+1. Right-click the starting node "My New Business Idea"
+2. Click "🧠 Brainstorm Ideas" from the context menu
 3. **Wait for 3 ideas to stream in** (Meta Llama 3.3 70B)
-4. **Point out:** "Three focused ideas, powered by Meta Llama"
+4. **Point out:** "Three focused ideas, powered by Meta Llama - all generated from a simple right-click!"
 
 ### Minute 2: Expand & Execute (1:00-2:00)
 
