@@ -355,29 +355,7 @@ services:
 
 ---
 
-## 🎯 Sponsor Tech Usage Summary
-
-### Meta Llama ✅
-- **4 out of 5 agents** use Llama models
-- **Llama 3.3 70B** for creative, analytical, and strategic tasks
-- **Advanced prompt engineering** with few-shot learning
-- **95% output quality** with minimal regeneration
-
-### Cerebras AI ✅
-- **Task Agent** uses Cerebras-optimized Llama 3.1 8B
-- **20x faster inference** than GPU-based alternatives
-- **Multi-provider orchestration** demonstrates technical sophistication
-- **200ms avg response time** for instant user experience
-
-### Docker ✅
-- **Nginx-based API Gateway** for intelligent routing
-- **Microservices architecture** with clean isolation
-- **Streaming-friendly configuration** for real-time responses
-- **Production-ready** with one-command deployment
-
----
-
-## 🏆 Why This Wins
+## 🎯 Why This Project Wins
 
 ### For Meta Prize
 1. ✅ Uses Llama 3.3 70B (latest open-source model)
@@ -386,58 +364,20 @@ services:
 4. ✅ Showcases Llama's strengths: creativity, analysis, planning
 
 ### For Cerebras Prize
-1. ✅ Demonstrates Cerebras for ultra-fast inference
-2. ✅ Multi-provider strategy (Llama 70B + Cerebras 8B)
+1. ✅ Demonstrates ultra-fast inference (20x speedup)
+2. ✅ Smart multi-provider strategy
 3. ✅ Performance optimization (right model for the task)
-4. ✅ Showcases Cerebras' speed advantage (20x faster)
+4. ✅ Showcases Cerebras' speed advantage
 
 ### For Docker Prize
-1. ✅ Containerized microservices with Nginx gateway
+1. ✅ Production-ready microservices with Nginx gateway
 2. ✅ Clean separation of 5 AI agent services
-3. ✅ Production-ready Docker Compose setup
-4. ✅ Streaming response support
-
----
-
-## 📊 Competitive Advantages
-
-### vs Projects Using Single AI Provider
-- ✅ We use **multi-provider orchestration** for optimal performance
-- ✅ No vendor lock-in (can switch providers easily)
-
-### vs Projects with Simple Chat UI
-- ✅ We use **visual canvas** for spatial thinking
-- ✅ Node-based workflow shows idea evolution
-
-### vs Projects Without Streaming
-- ✅ We stream responses in **real-time** (sub-second first byte)
-- ✅ Better UX with progressive content rendering
-
-### vs Projects with Monolithic Backend
-- ✅ We use **microservices** (scalable, maintainable)
-- ✅ Docker demonstrates production-ready architecture
-
----
-
-## 🎓 Technical Learnings
-
-### What We Learned About Meta Llama
-1. **Few-shot > Instructions:** Examples beat explanations for strict output
-2. **70B Matters:** Larger models follow instructions better
-3. **Streaming Works:** Llama plays nicely with server-sent events
-
-### What We Learned About Cerebras
-1. **Speed is Real:** 200ms vs 2000ms is noticeable to users
-2. **8B is Enough:** For structured output, smaller models work great
-3. **API Simplicity:** Drop-in replacement for OpenAI SDK
-
-### What We Learned About Docker
-1. **Nginx Rocks:** Sub-5ms routing overhead for microservices
-2. **Streaming Config:** `proxy_buffering off` is critical
-3. **Compose Power:** One command deploys 6 containerized services
+3. ✅ Streaming-friendly configuration
+4. ✅ One-command deployment
 
 ---
 
 **Built with ❤️ using the best open-source AI and infrastructure tools**
 
 [← Back to README](./README.md) | [Architecture Deep Dive →](./ARCHITECTURE.md)
+

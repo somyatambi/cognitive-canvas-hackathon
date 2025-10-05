@@ -179,19 +179,6 @@ Frontend runs on `http://localhost:5173`
 
 ---
 
-## 📸 Screenshots
-
-### Main Canvas Interface
-*[Screenshot of the infinite canvas with multiple connected nodes]*
-
-### AI-Powered Brainstorming
-*[Screenshot showing 3 generated ideas in beautiful card format]*
-
-### Task Breakdown
-*[Screenshot of color-coded task cards with effort estimates]*
-
----
-
 ## 🏆 Sponsor Technology Integration
 
 ### ✅ Meta Llama (Required for Meta Prize)
@@ -242,63 +229,6 @@ Frontend runs on `http://localhost:5173`
 
 ---
 
-## 🧪 Demo Video Script (2 minutes)
-
-**[0:00-0:15] Hook + Problem**
-> "Ever stared at a blank canvas, unsure where to start? You're not alone. 74% of entrepreneurs say ideation is their biggest challenge."
-
-**[0:15-0:45] Solution Demo - Brainstorm**
-> "Meet Cognitive Canvas. Let's say I want to build an EdTech startup. I type my vision... *[typing animation]* ...and click Brainstorm."
-> *[Show 3 ideas appearing on canvas in real-time]*
-> "Three focused ideas appear instantly, powered by Meta's Llama 3.3 70B."
-
-**[0:45-1:15] Critique & Refine**
-> "I love idea #2. Right-click, 'Select & Expand Idea.' Now the Critic Agent analyzes it..."
-> *[Show critique node with strengths/challenges appearing]*
-> "Balanced feedback. Real strengths, real challenges. I can refine based on this."
-
-**[1:15-1:45] Roadmap & Tasks**
-> "Let's create a roadmap... *[phases appear vertically]* ...and break down Phase 1 into tasks."
-> *[Show task cards with categories and time estimates]*
-> "Cerebras AI generates these in milliseconds. 🚀 Quick Wins, 🎯 Core Tasks, 📈 Growth Goals."
-
-**[1:45-2:00] Closing**
-> "From blank canvas to actionable plan in 2 minutes. Built with Meta Llama, Cerebras AI, and Docker."
-> *[Show tech stack badges]*
-> "Cognitive Canvas - Where ideas become reality."
-
----
-
-## 💪 What We Learned
-
-### Technical Growth
-- **Multi-Provider Orchestration**: Learned to combine different AI providers (OpenRouter, Cerebras) based on task requirements
-- **Streaming Architecture**: Implemented real-time server-sent events for smooth UX
-- **Docker Microservices**: Built production-ready containerized architecture
-- **React Flow Mastery**: Created custom nodes with intelligent content parsing
-
-### Prompt Engineering
-- Few-shot learning beats instructional prompts for strict output constraints
-- Model selection matters: Llama 3.3 70B for creativity, Cerebras for speed
-- System prompts require iteration and testing with real users
-
-### Design Insights
-- Spatial representation (canvas) beats linear chat for brainstorming
-- Visual feedback (streaming text) reduces perceived latency
-- Category-based color coding improves information hierarchy
-
----
-
-## 🔮 Future Enhancements
-
-- **Collaborative Mode**: Multiple users brainstorming on the same canvas
-- **Export to Tools**: Push tasks directly to Jira, Notion, or Trello
-- **Voice Agents**: Integration with LiveKit for voice-based brainstorming
-- **Idea Library**: Save and remix past brainstorming sessions
-- **Custom Agents**: Let users create specialized agents for their domain
-
----
-
 ## 📝 License
 
 MIT License - Feel free to build upon this project!
@@ -326,4 +256,4 @@ Built by **Somya Tambi** and **Sojas Nayask** for the WeMakeDevs Fullstack GenAI
 
 **Ready to transform your ideas into reality?** 🚀
 
-[Try Cognitive Canvas Now](#getting-started) | [Watch Demo Video](#) | [Read Architecture Docs](./ARCHITECTURE.md)
+[View Live Demo](#) | [Read Architecture Docs](./ARCHITECTURE.md)
