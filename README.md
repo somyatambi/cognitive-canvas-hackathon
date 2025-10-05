@@ -1,11 +1,5 @@
 # 🎨 Cognitive Canvas
 
-> Transform ideas into action with AI-powered collaborative brainstorming on an infinite visual canvas.
-
-![Meta Llama](https://img.shields.io/badge/Meta-Llama_3.3_70B-0081FB?style=for-the-badge&logo=meta)
-![Cerebras](https://img.shields.io/badge/Cerebras-AI_Inference-00D4AA?style=for-the-badge)
-![Docker](https://img.shields.io/badge/Docker-Microservices-2496ED?style=for-the-badge&logo=docker)
-
 ## 🎯 Problem Statement
 
 **The Blank Canvas Syndrome**: Entrepreneurs, students, and hackathon teams struggle with the overwhelming challenge of starting from scratch. Traditional brainstorming tools are either:
