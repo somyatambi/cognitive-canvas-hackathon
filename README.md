@@ -2,7 +2,22 @@
 
 ## 🎯 Problem Statement
 
-**The Blank Canvas Syndrome**: Entrepreneurs, students, and hackathon teams struggle with the overwhelming challenge of starting from scratch. Traditional brainstorming tools are either:
+**The Blank Canvas Syndrome**: Entrepreneurs, students, and hackathon teams struggle with the overwhelmin## 👥 Team
+
+**Team Name**: The Iterators
+
+**Members**:
+- **Somya Tambi** - [@somyatambi](https://github.com/somyatambi)
+- **Sojas Nayask** - [@sojasnayak](https://github.com/sojasnayak)
+
+**Hackathon**: WeMakeDevs Fullstack GenAI Hackathon 2025
+
+---
+
+**📚 Technical Deep Dive**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for implementation details
+
+**🏆 Sponsor Tech Proof**: See [SPONSOR_TECH_USAGE.md](./SPONSOR_TECH_USAGE.md) for detailed integration
+f starting from scratch. Traditional brainstorming tools are either:
 - Too rigid (linear chat interfaces)
 - Too isolated (single AI responses without validation)
 - Too abstract (ideas without actionable steps)
@@ -121,58 +136,6 @@ Unlike single-model systems, our agents specialize:
 
 ---
 
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Docker Desktop installed ([Download here](https://www.docker.com/products/docker-desktop/))
-- Node.js 20+ for frontend development
-- API Keys:
-  - **OpenRouter** ([Sign up](https://openrouter.ai/)) - Free tier includes Llama models
-  - **Cerebras** ([Get API key](https://cloud.cerebras.ai/)) - Free inference credits
-
-### Installation
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/somyatambi/cognitive-canvas-hackathon.git
-cd cognitive-canvas-hackathon
-```
-
-2. **Set up environment variables**
-```bash
-# Create .env file in root directory
-cp .env.example .env
-
-# Add your API keys:
-OPENROUTER_API_KEY=your_openrouter_key_here
-CEREBRAS_API_KEY=your_cerebras_key_here
-```
-
-3. **Start the backend services**
-```bash
-docker-compose up --build
-```
-This starts:
-- 5 AI agent services (brainstormer, critic, roadmap, task, pitch-deck)
-- Nginx API Gateway on `http://localhost:8080`
-
-4. **Start the frontend**
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Frontend runs on `http://localhost:5173`
-
-5. **Start creating!**
-- Enter a project idea in the input field
-- Click "Brainstorm Ideas" to generate 3 focused concepts
-- Right-click nodes for contextual actions
-- Watch your idea evolve on the canvas!
-
----
-
 ## 🏆 Sponsor Technology Integration
 
 ### ✅ Meta Llama (Required for Meta Prize)
@@ -207,38 +170,7 @@ Frontend runs on `http://localhost:5173`
 
 ---
 
-## 🎨 Design Philosophy
-
-### Professional Modern UI
-- Gradient-based color system for visual hierarchy
-- Smooth animations and transitions
-- Responsive design for all screen sizes
-- Category-specific color coding (Impact 🎯, Creativity 💡, Technical ⚙️)
-
-### User Experience Principles
-1. **Immediate Feedback**: Streaming responses, no waiting
-2. **Visual Clarity**: Clean typography, ample whitespace
-3. **Contextual Actions**: Smart menus based on node type
-4. **Progressive Disclosure**: Complex workflows feel simple
-
----
-
-## 📝 License
-
-MIT License - Feel free to build upon this project!
-
----
-
-## 🙏 Acknowledgments
-
-- **Meta** for providing world-class open-source Llama models
-- **Cerebras** for democratizing ultra-fast AI inference
-- **Docker** for enabling clean microservices architecture
-- **WeMakeDevs** for organizing this incredible hackathon
-
----
-
-## 👥 Team Name: The Iterators
+##  Team
 
 Built by **Somya Tambi** and **Sojas Nayask** for the WeMakeDevs Fullstack GenAI Hackathon 2025
 
@@ -246,8 +178,3 @@ Built by **Somya Tambi** and **Sojas Nayask** for the WeMakeDevs Fullstack GenAI
 - GitHub: [@sojasnayak](https://github.com/sojasnayak)
 - Project Repo: [cognitive-canvas-hackathon](https://github.com/somyatambi/cognitive-canvas-hackathon)
 
----
-
-**Ready to transform your ideas into reality?** 🚀
-
-[View Live Demo](#) | [Read Architecture Docs](./ARCHITECTURE.md)
