@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+# Updated: 2025-10-05 16:20 - Added /pitchdeck endpoint
 
 # 1. Define the request model
 class AgentRequest(BaseModel):
