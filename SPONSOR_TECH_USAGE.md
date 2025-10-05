@@ -24,6 +24,7 @@ Cognitive Canvas uses **all three sponsor technologies** to qualify for maximum 
 - Superior instruction following for nuanced creative tasks
 - Few-shot learning capability for strict output constraints
 - Best-in-class open-source model for ideation
+- **NEW: Persona-aware prompting** for Student/Entrepreneur/Hackathon modes
 
 **Code Implementation:**
 ```python
@@ -33,28 +34,45 @@ client = OpenAI(
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
 
-# Few-shot prompt engineering for precise output
-system_prompt = """You are a creative startup advisor. Generate EXACTLY 3 innovative business ideas.
+# Persona-aware system prompts (dynamically selected)
+STUDENT_PROMPT = """Generate ideas for college students:
+- $0-200 budget
+- 10-15 hours/week (study-friendly)
+- Uses college skills (coding, design, social media)
+- First revenue in 2-4 weeks
+Examples: Notion templates, TikTok channels, tutoring services"""
 
-Example response:
-1. AI-Powered Fitness Coach App
-2. Smart Grocery List Generator
-3. Language Learning Through Gaming
+ENTREPRENEUR_PROMPT = """Generate ideas for experienced founders:
+- $0-2000 budget
+- 30+ hours/week
+- $100k+ revenue potential
+- B2B SaaS, agencies, marketplaces"""
 
-Format: number, period, space, then 4-6 words ONLY. No descriptions."""
+HACKATHON_PROMPT = """Generate ideas for 24-48 hour builds:
+- Uses existing APIs (ChatGPT, Web3, etc.)
+- Impressive demo potential
+- Chrome extensions, AI integrations, dev tools"""
 
-model = "meta-llama/llama-3.3-70b-instruct"
+# Anti-repetition with maximum penalties
+stream = client.chat.completions.create(
+    model="meta-llama/llama-3.3-70b-instruct",
+    temperature=1.0,
+    frequency_penalty=2.0,  # MAXIMUM - prevents word repetition
+    presence_penalty=2.0,   # MAXIMUM - prevents topic repetition
+)
 ```
 
-**Advanced Technique:** We use **few-shot learning** instead of simple instructions because it:
-- Shows the model the exact format we want
-- Reduces post-processing and parsing errors
-- Ensures consistent output quality
+**Advanced Techniques:**
+1. **Persona-Aware Prompting**: Different system prompts for Student/Entrepreneur/Hackathon
+2. **Maximum Anti-Repetition Penalties**: frequency_penalty=2.0, presence_penalty=2.0
+3. **Dynamic Blacklisting**: Explicitly bans previously generated ideas
+4. **Few-Shot Learning**: Shows exact format instead of just describing it
 
 **Results:**
 - ✅ Generates exactly 3 ideas (95% consistency)
-- ✅ Ideas are concise (4-6 words each)
+- ✅ Ideas are concise (6-8 words each)
 - ✅ Creative and diverse across different domains
+- ✅ **NEW: Persona-tailored** (student ideas use $0-200 budget, entrepreneur ideas target B2B)
 
 ---
 
@@ -138,6 +156,7 @@ model = "meta-llama/llama-3.3-70b-instruct"
 2. **Structured Output:** Perfect for task lists (predictable format)
 3. **Cost-Effective:** Free tier for hackathon usage
 4. **Technical Showcase:** Demonstrates multi-provider orchestration
+5. **NEW: Enhanced Task Estimates** with time ranges and difficulty ratings
 
 **Code Implementation:**
 ```python
@@ -156,10 +175,17 @@ system_prompt = """You are a strategic project architect.
 Create 5-7 tasks with:
 - Clear action-oriented titles
 - Category (🚀 Quick Wins | 🎯 Core Tasks | 📈 Growth Goals)
-- Effort estimate (1-4 hours)
+- **Time range estimates** (X-Yh format for realistic planning)
+- **Difficulty ratings** (Easy/Medium/Hard for skill assessment)
 - Brief context
 
+Format: [Category] Task Title (Effort: X-Yh | Difficulty: Level) - Brief context
+
 Example:
+🚀 Set up Git repository (Effort: 0.5-1h | Difficulty: Easy) - Foundation for version control
+🎯 Design database schema (Effort: 2-4h | Difficulty: Medium) - Critical for data integrity
+🎯 Implement auth flow (Effort: 3-5h | Difficulty: Hard) - Security backbone
+📈 Add analytics (Effort: 1-2h | Difficulty: Easy) - Data-driven decisions
 🚀 Set up project repository (Effort: 1h) - Foundation for version control
 🎯 Design database schema (Effort: 3h) - Critical for data integrity"""
 ```

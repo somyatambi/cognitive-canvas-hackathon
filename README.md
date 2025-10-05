@@ -12,15 +12,20 @@
 ## 💡 Our Solution
 
 **Cognitive Canvas** is an intelligent visual workspace where multiple AI agents collaborate with you to:
-1. **🧠 Brainstorm** - Generate 3 focused startup ideas tailored to your vision (with budget-aware mode for students!)
+1. **🧠 Brainstorm** - Generate 3 focused startup ideas tailored to your profile:
+   - 🎓 **Student Mode**: Budget-friendly ideas ($0-200) buildable in 10-15hrs/week
+   - 💼 **Entrepreneur Mode**: High-growth B2B/SaaS ideas with $100k+ potential
+   - ⚡ **Hackathon Mode**: 24-48hr buildable projects with impressive demos
 2. **🔍 Critique** - Get constructive feedback on strengths and challenges
 3. **🗺️ Roadmap** - Create strategic development phases
-4. **✅ Task Breakdown** - Transform phases into actionable tasks with time estimates
-5. **📊 Pitch Deck** - Generate investor-ready 8-slide presentations (NEW!)
+4. **✅ Task Breakdown** - Transform phases into actionable tasks with **time ranges** (2-4h) and **difficulty ratings** (Easy/Medium/Hard)
+5. **📊 Pitch Deck** - Generate investor-ready 8-slide presentations with PDF export
 
-**Special for Students & Bootstrappers:** Our AI detects budget constraints and suggests **low-cost/no-cost** innovative ideas using free tools and platforms.
-
-Unlike traditional chatbots, Cognitive Canvas provides a **spatial thinking environment** where ideas flow naturally on an infinite canvas, creating a visual map of your creative process - from first idea to investor pitch.
+**What Makes Us Different:**
+- **Persona-Aware Brainstorming**: AI adapts ideas to your context (student vs entrepreneur vs hackathon)
+- **Spatial Visual Thinking**: Unlike linear chat interfaces, ideas flow naturally on an infinite canvas
+- **Multi-Agent Collaboration**: 5 specialized AI agents work together, not just one generic chatbot
+- **End-to-End Workflow**: From first idea to investor pitch, all in one tool
 
 ---
 
@@ -95,27 +100,42 @@ Unlike traditional chatbots, Cognitive Canvas provides a **spatial thinking envi
 
 ### 2. **Intelligent Multi-Agent Collaboration**
 Unlike single-model systems, our agents specialize:
-- **Brainstormer** uses Llama 3.3 70B for creative ideation (few-shot learning with strict constraints)
+- **Brainstormer** uses Llama 3.3 70B for creative ideation with **persona-aware prompts** (Student/Entrepreneur/Hackathon)
 - **Critic** provides balanced feedback with strengths & challenges
 - **Roadmap** creates strategic phase-based plans
-- **Task** leverages Cerebras for instant actionable breakdowns
-- **Pitch Deck** generates investor-ready 8-slide presentations (NEW!)
+- **Task** leverages Cerebras for instant actionable breakdowns with **time ranges** (2-4h) and **difficulty ratings** (Easy/Medium/Hard)
+- **Pitch Deck** generates investor-ready 8-slide presentations with PDF export
 
-### 3. **Visual Canvas Interface**
+### 3. **Persona-Based Idea Generation** 🎯 (NEW!)
+Before brainstorming, select your profile:
+- **🎓 Student**: Ideas with $0-200 budget, 10-15hrs/week, using college skills (Notion templates, TikTok channels, tutoring)
+- **💼 Entrepreneur**: B2B SaaS, agencies, marketplaces with $100k+ revenue potential
+- **⚡ Hackathon**: 24-48hr buildable projects using existing APIs (ChatGPT, Web3, Chrome extensions)
+
+### 3. **Persona-Based Idea Generation** 🎯 (NEW!)
+Before brainstorming, select your profile:
+- **🎓 Student**: Ideas with $0-200 budget, 10-15hrs/week, using college skills (Notion templates, TikTok channels, tutoring)
+- **💼 Entrepreneur**: B2B SaaS, agencies, marketplaces with $100k+ revenue potential
+- **⚡ Hackathon**: 24-48hr buildable projects using existing APIs (ChatGPT, Web3, Chrome extensions)
+
+### 4. **Visual Canvas Interface**
 - Infinite workspace for non-linear thinking
 - Node-based representation of ideas, critiques, roadmaps, and tasks
 - Visual connections show idea evolution
 - Professional gradient-based design system
 - Innovative side panel for workspace management
 
-### 4. **Smart Workflow Orchestration**
+### 5. **Smart Workflow Orchestration**
 - Context-aware menu options (different actions for different node types)
 - Automatic Brainstormer → Critic conversation flow
 - Seamless "Select & Expand Idea" workflow
-- Task categorization (🚀 Quick Wins | 🎯 Core Tasks | 📈 Growth Goals)
+- Task categorization with **detailed estimates**:
+  - 🚀 Quick Wins (0.5-2h, Easy difficulty)
+  - 🎯 Core Tasks (2-5h, Medium/Hard difficulty)
+  - 📈 Growth Goals (1-3h, Easy/Medium difficulty)
 - PDF export for pitch decks
 
-### 5. **Streaming Real-Time Responses**
+### 6. **Streaming Real-Time Responses**
 - Watch AI agents "think" in real-time
 - No loading spinners - immediate feedback
 - Professional loading overlays with animations
@@ -153,6 +173,59 @@ Unlike single-model systems, our agents specialize:
   - Production-ready deployment pattern
 
 **Technical Highlight**: Our Nginx gateway routes requests to specialized containerized agents, implementing a microservices pattern that scales horizontally.
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Docker & Docker Compose
+- Node.js 18+ (for frontend development)
+- OpenRouter API key ([get here](https://openrouter.ai/keys))
+- Cerebras API key ([get here](https://cloud.cerebras.ai/))
+
+### Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/somyatambi/cognitive-canvas-hackathon.git
+cd cognitive-canvas-hackathon
+```
+
+2. **Set up environment variables**
+```bash
+cp .env.example .env
+# Edit .env and add your API keys:
+# OPENROUTER_API_KEY=sk-or-v1-your-key-here
+# CEREBRAS_API_KEY=csk-your-key-here
+```
+
+3. **Start backend services**
+```bash
+docker-compose up -d
+# All 5 agents + Nginx gateway will start on port 8080
+```
+
+4. **Start frontend**
+```bash
+cd frontend
+npm install
+npm run dev
+# Frontend will start on http://localhost:5173
+```
+
+5. **Open your browser**
+- Navigate to http://localhost:5173
+- Right-click on "My New Business Idea" node
+- Select "🧠 Brainstorm Ideas"
+- Choose your persona (Student/Entrepreneur/Hackathon)
+- Watch the magic happen! ✨
+
+### Deployment Notes
+For production deployment, update `frontend/src/App.tsx`:
+- Replace `localhost:8080` with your backend API URL
+- Recommended: Use Render.com or similar Docker-friendly platform for backend
+- Frontend can be deployed as static site on Vercel/Netlify
 
 ---
 
