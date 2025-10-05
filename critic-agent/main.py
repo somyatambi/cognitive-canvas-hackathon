@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from openai import OpenAI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse # <-- IMPORT THIS
+from fastapi.responses import StreamingResponse
 
 class AgentRequest(BaseModel):
     prompt: str
