@@ -84,9 +84,10 @@ Unlike traditional chatbots, Cognitive Canvas provides a **spatial thinking envi
 
 ## 🌟 Key Features
 
-### 1. **Workspace Management** 💾 (NEW!)
+### 1. **Workspace Management** 💾
 - **Save Canvases**: Save your work with custom names
 - **Load Anytime**: Browse and load any saved canvas instantly
+- **Edit Canvas Names**: Rename your saved canvases with a click (NEW!)
 - **Multiple Projects**: Organize different business ideas separately
 - **Quick Switching**: Easy context switching between canvases
 - **Delete Old Work**: Clean up unwanted saves

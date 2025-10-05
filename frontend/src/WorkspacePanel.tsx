@@ -23,6 +23,8 @@ const WorkspacePanel = ({ currentNodes, currentEdges, onLoadCanvas, onNewCanvas 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
   const [canvasName, setCanvasName] = useState('');
   const [activeCanvasId, setActiveCanvasId] = useState<string | null>(null);
+  const [editingCanvasId, setEditingCanvasId] = useState<string | null>(null);
+  const [editCanvasName, setEditCanvasName] = useState('');
 
   // Load canvases from localStorage on mount
   useEffect(() => {
@@ -72,6 +74,31 @@ const WorkspacePanel = ({ currentNodes, currentEdges, onLoadCanvas, onNewCanvas 
         setActiveCanvasId(null);
       }
     }
+  };
+
+  const handleStartEdit = (canvas: Canvas, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingCanvasId(canvas.id);
+    setEditCanvasName(canvas.name);
+  };
+
+  const handleSaveEdit = (canvasId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!editCanvasName.trim()) return;
+
+    setCanvases(canvases.map(c => 
+      c.id === canvasId 
+        ? { ...c, name: editCanvasName.trim(), lastModified: Date.now() }
+        : c
+    ));
+    setEditingCanvasId(null);
+    setEditCanvasName('');
+  };
+
+  const handleCancelEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingCanvasId(null);
+    setEditCanvasName('');
   };
 
   const handleNewCanvas = () => {
@@ -273,34 +300,119 @@ const WorkspacePanel = ({ currentNodes, currentEdges, onLoadCanvas, onNewCanvas 
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '4px', color: 'white' }}>
-                        {canvas.name}
-                      </div>
-                      <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }}>
-                        {formatDate(canvas.lastModified)}
-                      </div>
+                      {editingCanvasId === canvas.id ? (
+                        <div onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="text"
+                            value={editCanvasName}
+                            onChange={(e) => setEditCanvasName(e.target.value)}
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') handleSaveEdit(canvas.id, e as any);
+                              if (e.key === 'Escape') handleCancelEdit(e as any);
+                            }}
+                            autoFocus
+                            style={{
+                              width: '100%',
+                              padding: '6px 8px',
+                              fontSize: '15px',
+                              border: '2px solid rgba(102, 126, 234, 0.5)',
+                              borderRadius: '6px',
+                              background: 'rgba(255, 255, 255, 0.1)',
+                              color: 'white',
+                              marginBottom: '4px',
+                              outline: 'none',
+                            }}
+                          />
+                          <div style={{ display: 'flex', gap: '6px', marginTop: '4px' }}>
+                            <button
+                              onClick={(e) => handleSaveEdit(canvas.id, e)}
+                              style={{
+                                padding: '4px 12px',
+                                fontSize: '11px',
+                                background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                              }}
+                            >
+                              ✓ Save
+                            </button>
+                            <button
+                              onClick={(e) => handleCancelEdit(e)}
+                              style={{
+                                padding: '4px 12px',
+                                fontSize: '11px',
+                                background: 'rgba(255, 255, 255, 0.1)',
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                border: '1px solid rgba(255, 255, 255, 0.2)',
+                                borderRadius: '4px',
+                                cursor: 'pointer',
+                                fontWeight: '600',
+                              }}
+                            >
+                              ✕ Cancel
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div style={{ fontSize: '15px', fontWeight: '600', marginBottom: '4px', color: 'white' }}>
+                            {canvas.name}
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'rgba(255, 255, 255, 0.5)' }}>
+                            {formatDate(canvas.lastModified)}
+                          </div>
+                        </>
+                      )}
                     </div>
-                    <button
-                      onClick={(e) => handleDeleteCanvas(canvas.id, e)}
-                      style={{
-                        background: 'rgba(239, 68, 68, 0.2)',
-                        color: '#ef4444',
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '6px 10px',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                        transition: 'all 0.2s ease',
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
-                      }}
-                    >
-                      🗑️
-                    </button>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      {editingCanvasId !== canvas.id && (
+                        <button
+                          onClick={(e) => handleStartEdit(canvas, e)}
+                          style={{
+                            background: 'rgba(102, 126, 234, 0.2)',
+                            color: '#667eea',
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '6px 10px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.background = 'rgba(102, 126, 234, 0.3)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.background = 'rgba(102, 126, 234, 0.2)';
+                          }}
+                        >
+                          ✏️
+                        </button>
+                      )}
+                      <button
+                        onClick={(e) => handleDeleteCanvas(canvas.id, e)}
+                        style={{
+                          background: 'rgba(239, 68, 68, 0.2)',
+                          color: '#ef4444',
+                          border: 'none',
+                          borderRadius: '6px',
+                          padding: '6px 10px',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          transition: 'all 0.2s ease',
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.3)';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(239, 68, 68, 0.2)';
+                        }}
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                   <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: 'rgba(255, 255, 255, 0.6)' }}>
                     <span>📊 {canvas.nodes.length} nodes</span>
