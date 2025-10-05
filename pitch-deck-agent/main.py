@@ -48,6 +48,7 @@ async def stream_generator(prompt: str, model: str, system_prompt: str):
 
 # 5. Define the API endpoint
 @app.post("/generate")
+@app.post("/pitchdeck")
 async def generate_response(request: AgentRequest):
     # Using Llama 3.3 70B for persuasive investor storytelling
     model = "meta-llama/llama-3.3-70b-instruct"

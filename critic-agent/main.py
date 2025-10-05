@@ -40,6 +40,7 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
         yield f"Error: {e}"
 
 @app.post("/generate")
+@app.post("/criticize")
 async def generate_response(request: AgentRequest):
     # Set the specific model and prompt for THIS agent
     model = "meta-llama/llama-3.3-70b-instruct"  # Using Meta Llama 3.3 70B for analytical critique

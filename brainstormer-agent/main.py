@@ -249,6 +249,7 @@ async def stream_generator(prompt: str, model_identifier: str, system_prompt: st
         yield f"Error: {e}"
 
 @app.post("/generate")
+@app.post("/brainstorm")
 async def generate_response(request: AgentRequest):
     # Extract persona from prompt if present
     persona = None

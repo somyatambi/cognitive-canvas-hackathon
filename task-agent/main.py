@@ -80,6 +80,7 @@ async def stream_generator(prompt: str, model: str, system_prompt: str, use_cere
 
 # 5. Define the API endpoint
 @app.post("/generate")
+@app.post("/tasks")
 async def generate_response(request: AgentRequest):
     # Using Cerebras for ultra-fast structured output generation
     # Cerebras inference is 20x faster than traditional GPU inference!
