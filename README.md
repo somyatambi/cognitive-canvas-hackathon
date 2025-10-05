@@ -1,5 +1,14 @@
 # 🎨 Cognitive Canvas
 
+> **AI-Powered Idea Studio** - Multi-agent visual workspace for entrepreneurs, students, and hackathon teams
+
+## 🚀 Live Demo
+- **Frontend**: https://cognitive-canvas-hackathon.vercel.app
+- **Backend API**: https://cognitive-canvas-hackathon-production.up.railway.app
+- **GitHub**: https://github.com/somyatambi/cognitive-canvas-hackathon
+
+---
+
 ## 🎯 Problem Statement
 
 **The Blank Canvas Syndrome**: Entrepreneurs, students, and hackathon teams struggle with the overwhelming challenge of starting from scratch. Traditional brainstorming tools are either:
@@ -178,13 +187,18 @@ Before brainstorming, select your profile:
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Docker & Docker Compose
-- Node.js 18+ (for frontend development)
+### Live Demo
+**Try it now**: https://cognitive-canvas-hackathon.vercel.app
+
+### Local Development
+
+**Prerequisites**
+- Docker
+- Node.js 18+
 - OpenRouter API key ([get here](https://openrouter.ai/keys))
 - Cerebras API key ([get here](https://cloud.cerebras.ai/))
 
-### Setup
+**Setup**
 
 1. **Clone the repository**
 ```bash
@@ -194,16 +208,15 @@ cd cognitive-canvas-hackathon
 
 2. **Set up environment variables**
 ```bash
-cp .env.example .env
-# Edit .env and add your API keys:
-# OPENROUTER_API_KEY=sk-or-v1-your-key-here
-# CEREBRAS_API_KEY=csk-your-key-here
+# Create .env file in root directory
+echo "OPENROUTER_API_KEY=your-key-here" > .env
+echo "CEREBRAS_API_KEY=your-key-here" >> .env
 ```
 
-3. **Start backend services**
+3. **Start backend with Docker**
 ```bash
-docker-compose up -d
-# All 5 agents + Nginx gateway will start on port 8080
+docker build -t cognitive-canvas-backend .
+docker run -p 8080:8080 --env-file .env cognitive-canvas-backend
 ```
 
 4. **Start frontend**
@@ -211,23 +224,18 @@ docker-compose up -d
 cd frontend
 npm install
 npm run dev
-# Frontend will start on http://localhost:5173
 ```
 
-5. **Open your browser**
-- Navigate to http://localhost:5173
-- Right-click on "My New Business Idea" node
-- Select "🧠 Brainstorm Ideas"
-- Choose your persona (Student/Entrepreneur/Hackathon)
-- Watch the magic happen! ✨
+5. **Open browser** → http://localhost:5173
 
-### Deployment Notes
-For production deployment, update `frontend/src/App.tsx`:
-- Replace `localhost:8080` with your backend API URL
-- Recommended: Use Render.com or similar Docker-friendly platform for backend
-- Frontend can be deployed as static site on Vercel/Netlify
+### Deployment
+- **Frontend**: Vercel (https://cognitive-canvas-hackathon.vercel.app)
+- **Backend**: Railway (https://cognitive-canvas-hackathon-production.up.railway.app)
+- **Environment Variables**: Set in Railway dashboard - `OPENROUTER_API_KEY`, `CEREBRAS_API_KEY`, `PORT=8080`
 
 ---
+
+## 👥 Team
 
 ## 👥 Team
 
@@ -235,14 +243,30 @@ For production deployment, update `frontend/src/App.tsx`:
 
 **Members**:
 - **Somya Tambi** - [@somyatambi](https://github.com/somyatambi)
-- **Sojas Nayask** - [@sojasnayak](https://github.com/sojasnayak)
+- **Sojas Nayak** - [@sojasnayak](https://github.com/sojasnayak)
 
 **Hackathon**: WeMakeDevs Fullstack GenAI Hackathon 2025
 
 ---
 
-**📚 Technical Deep Dive**: See [ARCHITECTURE.md](./ARCHITECTURE.md) for implementation details
+## 📚 Documentation
 
-**🏆 Sponsor Tech Proof**: See [SPONSOR_TECH_USAGE.md](./SPONSOR_TECH_USAGE.md) for detailed integration
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical deep dive into multi-agent system
+- **[SPONSOR_TECH_USAGE.md](./SPONSOR_TECH_USAGE.md)** - Detailed sponsor technology integration
+- **[DEMO_SCRIPT.md](./DEMO_SCRIPT.md)** - 3-minute demo guide
+- **[DEPLOYMENT_URLS.md](./DEPLOYMENT_URLS.md)** - Live deployment links and verification
+
+---
+
+## 🔗 Links
+
+- **Live App**: https://cognitive-canvas-hackathon.vercel.app
+- **Backend API**: https://cognitive-canvas-hackathon-production.up.railway.app
+- **GitHub**: https://github.com/somyatambi/cognitive-canvas-hackathon
+
+---
+
+**Built with ❤️ for WeMakeDevs GenAI Hackathon 2025**
+
 
 
