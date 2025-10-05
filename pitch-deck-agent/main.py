@@ -19,6 +19,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"status": "ok", "agent": "Pitch Deck Agent", "message": "Agent is running"}
+
 # 3. Initialize the API client for Meta Llama (pitch decks need persuasive storytelling!)
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",

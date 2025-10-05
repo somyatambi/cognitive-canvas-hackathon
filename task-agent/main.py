@@ -20,6 +20,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.get("/")
+def root():
+    return {"status": "ok", "agent": "Task Agent", "message": "Agent is running"}
+
 # 3. Initialize Cerebras API client (blazing fast for structured output!)
 # This demonstrates multi-provider orchestration: Llama for creativity, Cerebras for speed
 cerebras_client = OpenAI(
