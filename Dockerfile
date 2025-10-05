@@ -6,7 +6,7 @@ WORKDIR /app
 # Install nginx for routing
 RUN apt-get update && apt-get install -y nginx && rm -rf /var/lib/apt/lists/*
 
-# Copy nginx config
+# Copy nginx config (updated with rewrite rules)
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Install Python dependencies for all agents
