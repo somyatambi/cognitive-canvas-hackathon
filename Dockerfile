@@ -2,7 +2,7 @@
 FROM python:3.9-slim as base
 
 # Cache buster - change this value to force rebuild
-ARG CACHEBUST=6
+ARG CACHEBUST=7
 
 WORKDIR /app
 
