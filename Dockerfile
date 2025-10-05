@@ -1,6 +1,9 @@
 # Multi-stage build for all agents
 FROM python:3.9-slim as base
 
+# Cache buster - change this value to force rebuild
+ARG CACHEBUST=6
+
 WORKDIR /app
 
 # Install nginx for routing
