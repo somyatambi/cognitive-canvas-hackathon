@@ -45,6 +45,7 @@ const App = () => {
   const [menu, setMenu] = useState<any>(null);
   const [selectionModal, setSelectionModal] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [personaModal, setPersonaModal] = useState<{ show: boolean; sourceNode: any } | null>(null);
 
   const onNodeContextMenu = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -68,11 +69,14 @@ const App = () => {
     setSelectionModal(null);
   }, [setMenu, setSelectionModal]);
 
-  const handleAgentInvoke = async (agentType: string, sourceNode: any, customPrompt?: string) => {
+  const handleAgentInvoke = async (agentType: string, sourceNode: any, customPrompt?: string, persona?: string) => {
     setMenu(null);
     setIsLoading(true);
     const endpoint = `http://localhost:8080/${agentType}`;
     const promptToSend = customPrompt || sourceNode.data.label;
+    
+    // Add persona context to prompt if provided
+    const finalPrompt = persona ? `[PERSONA: ${persona}]\n${promptToSend}` : promptToSend;
     
     try {
       if (agentType === 'roadmap') {
@@ -240,7 +244,7 @@ const App = () => {
         setNodes((nds) => nds.concat(firstNewNode));
         setEdges((eds) => eds.concat(firstNewEdge));
 
-        const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: promptToSend }) });
+        const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: finalPrompt }) });
         if (!response.body) throw new Error("Response has no body");
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
@@ -372,7 +376,10 @@ const App = () => {
         {menu && (
           <div style={{ top: menu.top, left: menu.left }} className="context-menu">
             <p className="context-menu-header">Actions</p>
-            <button onClick={() => handleAgentInvoke('brainstorm', {id: menu.id, data: menu.data, position: menu.position})}>
+            <button onClick={() => {
+              setPersonaModal({ show: true, sourceNode: {id: menu.id, data: menu.data, position: menu.position} });
+              setMenu(null);
+            }}>
               🧠 Brainstorm Ideas
             </button>
             {menu.data.icon === '🧠' && (
@@ -411,6 +418,54 @@ const App = () => {
                 ))}
               </div>
               <button className="close-button" onClick={() => setSelectionModal(null)}>Close</button>
+            </div>
+          </div>
+        )}
+
+        {/* Persona Selection Modal */}
+        {personaModal?.show && (
+          <div className="selection-modal-overlay">
+            <div className="persona-modal">
+              <h3>🎯 Who are you?</h3>
+              <p className="persona-subtitle">Get personalized business ideas based on your profile</p>
+              <div className="persona-options">
+                <button 
+                  className="persona-card"
+                  onClick={() => {
+                    handleAgentInvoke('brainstorm', personaModal.sourceNode, undefined, 'student');
+                    setPersonaModal(null);
+                  }}
+                >
+                  <div className="persona-icon">🎓</div>
+                  <div className="persona-title">Student</div>
+                  <div className="persona-desc">College student with limited time & budget</div>
+                </button>
+                
+                <button 
+                  className="persona-card"
+                  onClick={() => {
+                    handleAgentInvoke('brainstorm', personaModal.sourceNode, undefined, 'entrepreneur');
+                    setPersonaModal(null);
+                  }}
+                >
+                  <div className="persona-icon">💼</div>
+                  <div className="persona-title">Entrepreneur</div>
+                  <div className="persona-desc">Experienced founder looking for next venture</div>
+                </button>
+                
+                <button 
+                  className="persona-card"
+                  onClick={() => {
+                    handleAgentInvoke('brainstorm', personaModal.sourceNode, undefined, 'hackathon');
+                    setPersonaModal(null);
+                  }}
+                >
+                  <div className="persona-icon">⚡</div>
+                  <div className="persona-title">Hackathon</div>
+                  <div className="persona-desc">Quick prototype for 24-48 hour project</div>
+                </button>
+              </div>
+              <button className="close-button" onClick={() => setPersonaModal(null)}>Cancel</button>
             </div>
           </div>
         )}

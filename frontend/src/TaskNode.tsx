@@ -9,10 +9,11 @@ type CustomNodeData = {
 };
 
 const TaskNode = ({ data, id }: NodeProps<CustomNodeData>) => {
-  // Parse tasks with categories and effort estimates
+  // Parse tasks with categories, effort estimates, and difficulty
   const parseTask = (line: string) => {
     const categoryMatch = line.match(/^(🚀|🎯|📈)/);
-    const effortMatch = line.match(/\(Effort:\s*(\d+)h?\)/i);
+    // Match both range (2-4h) and difficulty (Difficulty: Hard)
+    const effortMatch = line.match(/\(Effort:\s*([\d.]+(?:-[\d.]+)?h?)\s*(?:\|\s*Difficulty:\s*(\w+))?\)/i);
     
     let category = 'task';
     let categoryLabel = 'Task';
@@ -23,19 +24,20 @@ const TaskNode = ({ data, id }: NodeProps<CustomNodeData>) => {
       else if (emoji === '📈') { category = 'growth'; categoryLabel = 'Growth'; }
     }
     
-    const effort = effortMatch ? parseInt(effortMatch[1]) : 2;
+    const effortRange = effortMatch ? effortMatch[1] : '2h';
+    const difficulty = effortMatch?.[2] || null;
     
-    // Clean the task text
+    // Clean the task text - remove category emoji and effort info
     let taskText = line
       .replace(/^(🚀|🎯|📈)\s*/, '')
-      .replace(/\(Effort:\s*\d+h?\)/i, '')
+      .replace(/\(Effort:\s*[\d.]+(?:-[\d.]+)?h?\s*(?:\|\s*Difficulty:\s*\w+)?\)/i, '')
       .trim();
     
     // Split into title and description
     const [title, ...descParts] = taskText.split('-');
     const description = descParts.join('-').trim();
     
-    return { category, categoryLabel, effort, title: title.trim(), description };
+    return { category, categoryLabel, effortRange, difficulty, title: title.trim(), description };
   };
 
   const tasks = data.label
@@ -85,8 +87,13 @@ const TaskNode = ({ data, id }: NodeProps<CustomNodeData>) => {
               )}
               <div className="task-footer">
                 <span className="task-effort">
-                  ⏱️ {task.effort}h
+                  ⏱️ {task.effortRange}
                 </span>
+                {task.difficulty && (
+                  <span className={`task-difficulty difficulty-${task.difficulty.toLowerCase()}`}>
+                    {task.difficulty}
+                  </span>
+                )}
               </div>
             </div>
           ))

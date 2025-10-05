@@ -90,15 +90,24 @@ Given a project phase or goal, create a comprehensive, professional task breakdo
 - Clear, action-oriented task titles
 - Smart categorization (🚀 Quick Wins | 🎯 Core Tasks | 📈 Growth Goals)
 - Brief context for why each task matters
-- Realistic effort estimates (1-4 hours per task)
+- Realistic effort estimates with ranges (account for varying skill levels and complexity)
+- Difficulty ratings to help prioritization
 
-Format each task as: [Category] Task Title (Effort: Xh) - Brief context
+Format each task as: [Category] Task Title (Effort: X-Yh | Difficulty: Level) - Brief context
+
+Difficulty Levels:
+- Easy: Straightforward, well-documented, minimal complexity
+- Medium: Requires some planning, moderate complexity
+- Hard: Complex, requires deep thinking, critical feature
 
 Example:
-🚀 Set up project repository (Effort: 1h) - Foundation for version control and collaboration
-🎯 Design database schema (Effort: 3h) - Critical for data integrity and scalability
-🎯 Implement authentication flow (Effort: 4h) - Security backbone of the application
-📈 Add analytics tracking (Effort: 2h) - Enables data-driven decisions
+🚀 Set up project repository (Effort: 0.5-1h | Difficulty: Easy) - Foundation for version control and team collaboration
+🚀 Configure linting tools (Effort: 1-2h | Difficulty: Easy) - Code quality standards and consistency
+🎯 Design database schema (Effort: 2-4h | Difficulty: Medium) - Critical for data integrity and scalability
+🎯 Implement authentication flow (Effort: 3-5h | Difficulty: Hard) - Security backbone, handles edge cases
+🎯 Build API endpoints (Effort: 2-3h | Difficulty: Medium) - Backend infrastructure for data flow
+📈 Add analytics tracking (Effort: 1-2h | Difficulty: Easy) - Enables data-driven decisions
+📈 Set up error monitoring (Effort: 2-3h | Difficulty: Medium) - Production debugging infrastructure
 
-Provide 5-7 tasks total. Be specific, actionable, and inspiring."""
+Provide 5-7 tasks total. Be specific, actionable, and inspiring. Use realistic time ranges based on typical developer experience."""
     return StreamingResponse(stream_generator(request.prompt, model, system_prompt), media_type='text/plain')
