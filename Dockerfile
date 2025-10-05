@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r /app/brainstormer-requirements.txt \
     && pip install --no-cache-dir -r /app/task-requirements.txt \
     && pip install --no-cache-dir -r /app/pitch-deck-requirements.txt
 
-# Copy all agent code
+# Copy all agent code (with direct endpoint support)
 COPY brainstormer-agent /app/brainstormer-agent
 COPY critic-agent /app/critic-agent
 COPY roadmap-agent /app/roadmap-agent
