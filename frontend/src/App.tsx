@@ -15,6 +15,7 @@ import CustomNode from './CustomNode';
 import TaskNode from './TaskNode';
 import WorkspacePanel from './WorkspacePanel';
 import ZoomSlider from './ZoomSlider';
+import API_BASE_URL from './config';
 
 const nodeTypes = {
   custom: CustomNode,
@@ -72,7 +73,7 @@ const App = () => {
   const handleAgentInvoke = async (agentType: string, sourceNode: any, customPrompt?: string, persona?: string) => {
     setMenu(null);
     setIsLoading(true);
-    const endpoint = `http://localhost:8080/${agentType}`;
+    const endpoint = `${API_BASE_URL}/${agentType}`;
     const promptToSend = customPrompt || sourceNode.data.label;
     
     // Add persona context to prompt if provided
@@ -260,7 +261,7 @@ const App = () => {
         setNodes((currentNodes) => currentNodes.map((node) => node.id === firstNodeId ? { ...node, className: 'new-node' } : node));
         
         if (agentType === 'brainstorm' && !customPrompt) {
-            const criticResponseStream = await fetch('http://localhost:8080/criticize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: fullResponse }) });
+            const criticResponseStream = await fetch(`${API_BASE_URL}/criticize`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt: fullResponse }) });
             if (!criticResponseStream.body) return;
             const criticNodeId = getUniqueId();
             const criticNode: Node = { id: criticNodeId, type: 'custom', className: 'new-node thinking', data: { label: '', icon: '🧐', color: '#f87171', agentName: 'Critic' }, position: { x: firstNewNode.position.x + 400, y: firstNewNode.position.y } };
