@@ -4,11 +4,11 @@
 
 ## ⚠️ **IMPORTANT FOR JUDGES: This app uses RIGHT-CLICK interactions!**
 > **Quick Guide:**  
-> 1. **Right-click on canvas** → Enter your idea  
+> 1. **Right-click on Starting Point** → This will generate ideas 
 > 2. **Right-click on generated nodes** → Access AI agents (Criticize, Roadmap, Tasks, Pitch Deck)  
 > 3. **Don't use single-click** - you'll miss the core functionality!
 
-> 📅 **Documentation Note**: Usage instructions added post-submission (2025-10-06 13:25 UTC)  
+> 📅 **Documentation Note**: Usage instructions added post-submission (2025-10-06 20:30 UTC)  
 > to clarify interaction model based on user testing feedback. No code changes made.
 
 ---
@@ -23,20 +23,17 @@
 
 ## 📖 **Quick Start Guide**
 
-### **Step 1: Select Your Persona**
+### **Steps: Generate & Navigate** (RIGHT-CLICK REQUIRED!)
+1. **Right Click on Starting point and click "Brainstorm Idea"** → Get 3 persona-specific variations
 Choose based on your situation:
 - 🎓 **Student** - Budget: $0-200, skills-focused, weekend projects
 - 💼 **Entrepreneur** - Revenue-driven, B2B scalable solutions  
 - ⚡ **Hackathon** - 48-hour timeline, team-based execution
 
-### **Step 2: Enter Starting Idea**
-Type your initial concept (e.g., "AI-powered study planner for college students")
-
-### **Step 3: Generate & Navigate** (RIGHT-CLICK REQUIRED!)
-1. Click **"Generate Ideas"** → Get 3 persona-specific variations
-2. **Right-click on Brainstormer node** → Select "🔍 Criticize"
-3. **Right-click on Critic node** → Select "🗺️ Generate Roadmap"
-4. **Right-click on Roadmap node** → Select "📋 Generate Tasks"
+ Select one of the persona and you will get brainstormer node and the critic node.
+2. **Right-click on Brainstormer node** → Select "🔍 Select and Expand Idea"
+3. **Right-click on Focused Idea node** → Select "🗺️ Generate Roadmap"
+4. **Right-click on Each Roadmap node** → Select "📋 Generate Tasks"
 5. **Right-click on Roadmap node** → Select "🎤 Generate Pitch Deck"
 
 **⏱️ Total time: ~2 minutes**
