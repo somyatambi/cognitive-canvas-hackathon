@@ -2,10 +2,44 @@
 
 > **AI-Powered Idea Studio** - Multi-agent visual workspace for entrepreneurs, students, and hackathon teams
 
+## ⚠️ **IMPORTANT FOR JUDGES: This app uses RIGHT-CLICK interactions!**
+> **Quick Guide:**  
+> 1. **Right-click on canvas** → Enter your idea  
+> 2. **Right-click on generated nodes** → Access AI agents (Criticize, Roadmap, Tasks, Pitch Deck)  
+> 3. **Don't use single-click** - you'll miss the core functionality!
+
+> 📅 **Documentation Note**: Usage instructions added post-submission (2025-10-06 13:25 UTC)  
+> to clarify interaction model based on user testing feedback. No code changes made.
+
+---
+
 ## 🚀 Live Demo
 - **Frontend**: https://cognitive-canvas-hackathon.vercel.app
 - **Backend API**: https://cognitive-canvas-hackathon-production.up.railway.app
+- **API Health**: https://cognitive-canvas-hackathon-production.up.railway.app/ (Returns 200 OK)
 - **GitHub**: https://github.com/somyatambi/cognitive-canvas-hackathon
+
+---
+
+## 📖 **Quick Start Guide**
+
+### **Step 1: Select Your Persona**
+Choose based on your situation:
+- 🎓 **Student** - Budget: $0-200, skills-focused, weekend projects
+- 💼 **Entrepreneur** - Revenue-driven, B2B scalable solutions  
+- ⚡ **Hackathon** - 48-hour timeline, team-based execution
+
+### **Step 2: Enter Starting Idea**
+Type your initial concept (e.g., "AI-powered study planner for college students")
+
+### **Step 3: Generate & Navigate** (RIGHT-CLICK REQUIRED!)
+1. Click **"Generate Ideas"** → Get 3 persona-specific variations
+2. **Right-click on Brainstormer node** → Select "🔍 Criticize"
+3. **Right-click on Critic node** → Select "🗺️ Generate Roadmap"
+4. **Right-click on Roadmap node** → Select "📋 Generate Tasks"
+5. **Right-click on Roadmap node** → Select "🎤 Generate Pitch Deck"
+
+**⏱️ Total time: ~2 minutes**
 
 ---
 
@@ -83,7 +117,7 @@
 - 🎯 Axios - Streaming response handling
 
 **Backend**
-- 🐍 Python 3.11 + FastAPI
+- 🐍 Python 3.9 + FastAPI
 - 🤖 **Meta Llama 3.3 70B** (via OpenRouter) - Creative brainstorming, critique, roadmaps & pitch decks
 - 🚀 **Cerebras AI** (Llama 3.1 8B) - Ultra-fast task generation (20x faster inference!)
 - 🐳 **Docker + Nginx Gateway** - Microservices orchestration (5 agents!)
@@ -101,7 +135,7 @@
 ### 1. **Workspace Management** 💾
 - **Save Canvases**: Save your work with custom names
 - **Load Anytime**: Browse and load any saved canvas instantly
-- **Edit Canvas Names**: Rename your saved canvases with a click (NEW!)
+- **Edit Canvas Names**: Rename your saved canvases with a click
 - **Multiple Projects**: Organize different business ideas separately
 - **Quick Switching**: Easy context switching between canvases
 - **Delete Old Work**: Clean up unwanted saves
@@ -115,13 +149,7 @@ Unlike single-model systems, our agents specialize:
 - **Task** leverages Cerebras for instant actionable breakdowns with **time ranges** (2-4h) and **difficulty ratings** (Easy/Medium/Hard)
 - **Pitch Deck** generates investor-ready 8-slide presentations with PDF export
 
-### 3. **Persona-Based Idea Generation** 🎯 (NEW!)
-Before brainstorming, select your profile:
-- **🎓 Student**: Ideas with $0-200 budget, 10-15hrs/week, using college skills (Notion templates, TikTok channels, tutoring)
-- **💼 Entrepreneur**: B2B SaaS, agencies, marketplaces with $100k+ revenue potential
-- **⚡ Hackathon**: 24-48hr buildable projects using existing APIs (ChatGPT, Web3, Chrome extensions)
-
-### 3. **Persona-Based Idea Generation** 🎯 (NEW!)
+### 3. **Persona-Based Idea Generation** 🎯
 Before brainstorming, select your profile:
 - **🎓 Student**: Ideas with $0-200 budget, 10-15hrs/week, using college skills (Notion templates, TikTok channels, tutoring)
 - **💼 Entrepreneur**: B2B SaaS, agencies, marketplaces with $100k+ revenue potential
@@ -155,7 +183,7 @@ Before brainstorming, select your profile:
 
 ### ✅ Meta Llama (Required for Meta Prize)
 - **Model**: Llama 3.3 70B Instruct
-- **Usage**: 3 out of 4 agents (brainstormer, critic, roadmap)
+- **Usage**: 4 out of 5 agents (brainstormer, critic, roadmap, pitch deck)
 - **Why Llama?**: 
   - Superior instruction following for creative tasks
   - Excellent at nuanced critique and strategic planning
@@ -237,8 +265,6 @@ npm run dev
 
 ## 👥 Team
 
-## 👥 Team
-
 **Team Name**: The Iterators
 
 **Members**:
@@ -267,6 +293,3 @@ npm run dev
 ---
 
 **Built with ❤️ for WeMakeDevs GenAI Hackathon 2025**
-
-
-

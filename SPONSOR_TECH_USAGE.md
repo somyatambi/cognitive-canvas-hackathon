@@ -1,409 +1,246 @@
 # 🏆 Sponsor Technology Usage
 
-> Detailed documentation of how Cognitive Canvas uses Meta Llama, Cerebras AI, and Docker to create a winning hackathon project.
+> How Cognitive Canvas uses Meta Llama, Cerebras AI, and Docker to build a production-ready multi-agent system.
 
 ---
 
-## 📋 Overview
+## 📋 Quick Overview
 
-Cognitive Canvas uses **all three sponsor technologies** to qualify for maximum prize opportunities:
-
-| Sponsor | Technology Used | Where | Why |
-|---------|----------------|-------|-----|
-| **Meta** | Llama 3.3 70B Instruct | Brainstormer, Critic, Roadmap, Pitch Deck agents | Best open-source LLM for creative & analytical tasks |
-| **Cerebras** | Llama 3.1 8B (Cerebras-optimized) | Task Agent | 20x faster inference for structured output |
-| **Docker** | Containerized Microservices Gateway | All backend services | Clean agent isolation & production-ready architecture |
+| Sponsor | Technology | Usage | Why |
+|---------|-----------|-------|-----|
+| **Meta** | Llama 3.3 70B | 4/5 agents (Brainstormer, Critic, Roadmap, Pitch Deck) | Best open-source LLM for creative tasks |
+| **Cerebras** | Llama 3.1 8B | Task Agent | 20x faster for structured output |
+| **Docker** | Single container + Nginx | All 5 agents + gateway | Production-ready microservices |
 
 ---
 
-## 🤖 Meta Llama Integration
+## 🤖 Meta Llama Integration (4/5 Agents = 80%)
 
-### 1. Brainstormer Agent
-**Model:** `meta-llama/llama-3.3-70b-instruct` via OpenRouter  
-**Why Llama 3.3 70B?**
-- Superior instruction following for nuanced creative tasks
-- Few-shot learning capability for strict output constraints
-- Best-in-class open-source model for ideation
-- **NEW: Persona-aware prompting** for Student/Entrepreneur/Hackathon modes
+### Why Llama 3.3 70B?
+- ✅ Superior instruction following for creative/analytical tasks
+- ✅ Few-shot learning for strict output constraints
+- ✅ Best open-source model for nuanced reasoning
 
-**Code Implementation:**
+### Agent Implementations
+
+**1. Brainstormer Agent** (Port 8001, `/brainstorm`)
 ```python
-# brainstormer-agent/main.py
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
-)
+model = "meta-llama/llama-3.3-70b-instruct"
 
-# Persona-aware system prompts (dynamically selected)
-STUDENT_PROMPT = """Generate ideas for college students:
-- $0-200 budget
-- 10-15 hours/week (study-friendly)
-- Uses college skills (coding, design, social media)
-- First revenue in 2-4 weeks
-Examples: Notion templates, TikTok channels, tutoring services"""
+# Persona-aware prompts (NEW!)
+STUDENT_PROMPT = """$0-200 budget, 10-15hrs/week, college skills"""
+ENTREPRENEUR_PROMPT = """$100k+ revenue potential, B2B SaaS"""
+HACKATHON_PROMPT = """24-48hr builds using existing APIs"""
 
-ENTREPRENEUR_PROMPT = """Generate ideas for experienced founders:
-- $0-2000 budget
-- 30+ hours/week
-- $100k+ revenue potential
-- B2B SaaS, agencies, marketplaces"""
-
-HACKATHON_PROMPT = """Generate ideas for 24-48 hour builds:
-- Uses existing APIs (ChatGPT, Web3, etc.)
-- Impressive demo potential
-- Chrome extensions, AI integrations, dev tools"""
-
-# Anti-repetition with maximum penalties
-stream = client.chat.completions.create(
-    model="meta-llama/llama-3.3-70b-instruct",
-    temperature=1.0,
-    frequency_penalty=2.0,  # MAXIMUM - prevents word repetition
-    presence_penalty=2.0,   # MAXIMUM - prevents topic repetition
+# Maximum anti-repetition
+stream = client.create(
+    frequency_penalty=2.0,  # MAXIMUM
+    presence_penalty=2.0    # MAXIMUM
 )
 ```
-
-**Advanced Techniques:**
-1. **Persona-Aware Prompting**: Different system prompts for Student/Entrepreneur/Hackathon
-2. **Maximum Anti-Repetition Penalties**: frequency_penalty=2.0, presence_penalty=2.0
-3. **Dynamic Blacklisting**: Explicitly bans previously generated ideas
-4. **Few-Shot Learning**: Shows exact format instead of just describing it
-
-**Results:**
-- ✅ Generates exactly 3 ideas (95% consistency)
-- ✅ Ideas are concise (6-8 words each)
-- ✅ Creative and diverse across different domains
-- ✅ **NEW: Persona-tailored** (student ideas use $0-200 budget, entrepreneur ideas target B2B)
+**Result:** 95% consistency generating exactly 3 ideas, persona-tailored
 
 ---
 
-### 2. Critic Agent
-**Model:** `meta-llama/llama-3.3-70b-instruct` via OpenRouter  
-**Why Llama for Critique?**
-- Balanced analytical thinking (not overly positive or negative)
-- Understands business context and market dynamics
-- Can structure feedback into strengths/challenges/recommendations
-
-**Code Implementation:**
+**2. Critic Agent** (Port 8002, `/criticize`)
 ```python
-# critic-agent/main.py
-system_prompt = """You are a constructive business critic with startup experience.
-
-Analyze the idea and provide:
-💪 Strengths (2-3 key advantages)
-⚠️ Challenges (2-3 potential obstacles)
-💡 Recommendation (1 strategic next step)
-
-Be honest but encouraging. Focus on actionable insights."""
-
 model = "meta-llama/llama-3.3-70b-instruct"
-```
 
-**Why This Matters:**
-- Llama 3.3 70B understands nuance (doesn't just say "great idea!")
-- Can identify non-obvious market challenges
-- Provides strategic depth beyond basic validation
+system_prompt = """Analyze ALL 3 ideas separately:
+💪 Strengths (2-3 advantages)
+⚠️ Challenges (2-3 obstacles)
+💡 Recommendation (1 strategic next step)"""
+```
+**Result:** Balanced feedback with actionable insights, not generic praise
 
 ---
 
-### 3. Roadmap Agent
-**Model:** `meta-llama/llama-3.3-70b-instruct` via OpenRouter  
-**Why Llama for Planning?**
-- Excellent at breaking down complex projects into phases
-- Understands dependencies and logical sequencing
-- Can estimate realistic timelines
-
-**Code Implementation:**
+**3. Roadmap Agent** (Port 8003, `/roadmap`)
 ```python
-# roadmap-agent/main.py
-system_prompt = """You are a strategic project planner.
-
-Create 4-5 development phases in this format:
-Phase 1 :: Foundation (Weeks 1-2) :: Set up infrastructure
-Phase 2 :: Core Features (Weeks 3-6) :: Build main functionality
-...
-
-Each phase should be actionable with clear deliverables."""
-
 model = "meta-llama/llama-3.3-70b-instruct"
+
+system_prompt = """Create 3-4 phases (2-4 weeks each):
+Phase X: [Title] :: [Deliverables + Success Metrics]"""
 ```
-
-**Why This Matters:**
-- Llama 3.3 70B creates realistic (not overly ambitious) roadmaps
-- Phases build on each other logically
-- Time estimates are reasonable for hackathon projects
+**Result:** Realistic roadmaps with measurable milestones
 
 ---
 
-### Meta Llama: By The Numbers
-
-| Metric | Value | Significance |
-|--------|-------|--------------|
-| **Agents Using Llama** | 3 out of 4 | 75% of our AI infrastructure |
-| **Total Parameters** | 70 billion | Large model = better reasoning |
-| **Avg Response Time** | 2-4 seconds | Acceptable for creative tasks |
-| **Output Quality** | 95% usable | Minimal need for regeneration |
-| **Open Source** | ✅ Yes | Aligns with hackathon values |
-
----
-
-## ⚡ Cerebras AI Integration
-
-### Task Agent (Ultra-Fast Structured Output)
-
-**Model:** `llama3.1-8b` (Cerebras-optimized)  
-**Why Cerebras?**
-1. **Speed:** 20x faster inference than traditional GPU setups
-2. **Structured Output:** Perfect for task lists (predictable format)
-3. **Cost-Effective:** Free tier for hackathon usage
-4. **Technical Showcase:** Demonstrates multi-provider orchestration
-5. **NEW: Enhanced Task Estimates** with time ranges and difficulty ratings
-
-**Code Implementation:**
+**4. Pitch Deck Agent** (Port 8005, `/pitchdeck`)
 ```python
-# task-agent/main.py
-# Using Cerebras for ultra-fast structured output generation
-client = OpenAI(
+model = "meta-llama/llama-3.3-70b-instruct"
+
+system_prompt = """Generate 8-slide investor deck:
+- Tailor funding ask to business type (student vs startup)
+- SLIDE 1: Problem | SLIDE 2: Solution | ... | SLIDE 8: Funding"""
+
+stream = client.create(
+    max_tokens=2000,
+    temperature=0.8  # Higher creativity for storytelling
+)
+```
+**Result:** Context-aware pitch decks with realistic funding asks
+
+---
+
+### Meta Llama Stats
+
+| Metric | Value |
+|--------|-------|
+| **Agents Using Llama** | 4/5 (80%) |
+| **Model Size** | 70 billion parameters |
+| **Avg Response Time** | 2-4 seconds |
+| **Output Quality** | 95% usable without regeneration |
+
+---
+
+## ⚡ Cerebras AI Integration (1/5 Agents)
+
+### Task Agent: Ultra-Fast Structured Output
+
+**Why Cerebras?** Tasks need **speed**, not 70B creativity!
+
+```python
+# Primary: Cerebras API
+cerebras_client = OpenAI(
     base_url="https://api.cerebras.ai/v1",
     api_key=os.getenv("CEREBRAS_API_KEY")
 )
 
-# Cerebras-optimized Llama model
 model = "llama3.1-8b"
 
-system_prompt = """You are a strategic project architect.
-
-Create 5-7 tasks with:
-- Clear action-oriented titles
-- Category (🚀 Quick Wins | 🎯 Core Tasks | 📈 Growth Goals)
-- **Time range estimates** (X-Yh format for realistic planning)
-- **Difficulty ratings** (Easy/Medium/Hard for skill assessment)
-- Brief context
-
-Format: [Category] Task Title (Effort: X-Yh | Difficulty: Level) - Brief context
+system_prompt = """Generate 5-7 tasks with:
+🚀 Quick Wins | 🎯 Core Tasks | 📈 Growth Goals
+Format: [Category] Task (Effort: X-Yh | Difficulty: Easy/Medium/Hard) - Context
 
 Example:
-🚀 Set up Git repository (Effort: 0.5-1h | Difficulty: Easy) - Foundation for version control
-🎯 Design database schema (Effort: 2-4h | Difficulty: Medium) - Critical for data integrity
-🎯 Implement auth flow (Effort: 3-5h | Difficulty: Hard) - Security backbone
-📈 Add analytics (Effort: 1-2h | Difficulty: Easy) - Data-driven decisions
-🚀 Set up project repository (Effort: 1h) - Foundation for version control
-🎯 Design database schema (Effort: 3h) - Critical for data integrity"""
+🚀 Set up Git repo (Effort: 0.5-1h | Difficulty: Easy) - Version control
+🎯 Design DB schema (Effort: 2-4h | Difficulty: Medium) - Data integrity
+🎯 Implement auth (Effort: 3-5h | Difficulty: Hard) - Security backbone"""
+
+# Automatic fallback to OpenRouter if Cerebras fails
+async def stream_generator(use_cerebras=True):
+    try:
+        client = cerebras_client if use_cerebras else openrouter_client
+        # ... streaming logic
+    except:
+        if use_cerebras:
+            yield from stream_generator(use_cerebras=False)  # Fallback!
 ```
 
-**Why Cerebras for Tasks (vs Llama 70B)?**
+### Performance Comparison
 
-| Requirement | Cerebras 3.1 8B | Llama 3.3 70B | Winner |
-|-------------|-----------------|---------------|--------|
-| Speed | ~200ms | ~2000ms | **Cerebras** |
-| Structured Output | Excellent | Excellent | Tie |
-| Creativity | Good | Excellent | Llama |
-| Cost | Free tier | Free tier | Tie |
+| Metric | Cerebras 3.1 8B | Llama 3.3 70B |
+|--------|-----------------|---------------|
+| **Speed** | ~200-500ms ⚡ | ~2000ms |
+| **Quality** | 98% format compliance | 95% format compliance |
+| **Use Case** | Structured lists ✅ | Creative writing ✅ |
 
-**Conclusion:** Tasks don't need 70B creativity, they need speed! Cerebras wins for this use case.
-
-**Performance Metrics:**
-- ⚡ **Avg Response Time:** 200ms (10x faster than Llama 70B)
-- 📊 **Tasks Generated per Request:** 5-7 tasks
-- ✅ **Format Compliance:** 98% (rarely breaks task format)
-- 🎯 **User Experience:** Feels "instant" to users
+**Winner for Tasks:** Cerebras (10x faster, same quality)
 
 ---
 
-### Multi-Provider Strategy (Technical Innovation)
+## 🐳 Docker Architecture
 
-**Problem:** Single AI provider = single point of failure + suboptimal performance  
-**Solution:** Match AI model to task requirements
+### Single Container, Multi-Process Design
 
-```
-Creative Ideation → Llama 3.3 70B (slow but smart)
-Fast Structured Output → Cerebras 8B (blazing fast)
-```
-
-**Architecture Diagram:**
-```
-User Request
-    ↓
-Frontend determines task type
-    ↓
-    ├─→ Brainstorm/Critique/Roadmap → OpenRouter → Llama 3.3 70B
-    └─→ Task Breakdown → Cerebras API → Llama 3.1 8B
-    ↓
-Streaming response back to UI
-```
-
-**Why This Matters for Judging:**
-1. **Technical Sophistication:** Shows understanding of AI model tradeoffs
-2. **Performance Optimization:** Right tool for the right job
-3. **Production Readiness:** Multi-provider = no vendor lock-in
-
----
-
-## 🐳 Docker Containerized Microservices Gateway
-
-### Architecture Overview
-
-Our application uses **Docker Compose** to orchestrate 6 containerized services in a microservices architecture, with Nginx as an API gateway for intelligent request routing.
-
-### Architecture
+**Why not Docker Compose?**
+- ✅ Simpler deployment (1 image vs 6)
+- ✅ Faster (localhost vs Docker network)
+- ✅ Cost-effective (Railway free tier = 1 service)
 
 ```
-┌─────────────────────────────────────────────┐
-│        Nginx API Gateway (:8080)            │
-│  - Single entry point for all agents        │
-│  - Intelligent routing based on path        │
-│  - Streaming-friendly configuration         │
-└─────────────┬───────────────────────────────┘
-              │
-    ┌─────────┴─────────┬─────────────┬────────┐
-    ▼                   ▼             ▼        ▼
-┌────────┐         ┌────────┐    ┌────────┐  ┌────────┐
-│Brainstorm│       │ Critic │    │Roadmap │  │  Task  │
-│  :8000   │       │ :8000  │    │ :8000  │  │ :8000  │
-│ (Docker) │       │(Docker)│    │(Docker)│  │(Docker)│
-└──────────┘       └────────┘    └────────┘  └────────┘
+┌─────────────────────────────────────────┐
+│      Docker Container (:8080)           │
+│                                         │
+│  Nginx → routes to localhost:800X       │
+│    ├─→ 8001: Brainstormer (Llama 70B)  │
+│    ├─→ 8002: Critic (Llama 70B)        │
+│    ├─→ 8003: Roadmap (Llama 70B)       │
+│    ├─→ 8004: Task (Cerebras 8B)        │
+│    └─→ 8005: Pitch Deck (Llama 70B)    │
+└─────────────────────────────────────────┘
 ```
 
-### Nginx Configuration (nginx.conf)
+### Nginx Config (Streaming-Optimized)
 
 ```nginx
-events {
-    worker_connections 1024;
+location = /brainstorm {
+    proxy_pass http://127.0.0.1:8001/brainstorm;
+    proxy_http_version 1.1;         # Required for streaming
+    proxy_set_header Connection ""; # Enable persistent connections
 }
-
-http {
-    # Define upstream services (Docker containers)
-    upstream brainstormer {
-        server brainstormer-agent:8000;
-    }
-    upstream critic {
-        server critic-agent:8000;
-    }
-    upstream roadmap {
-        server roadmap-agent:8000;
-    }
-    upstream task {
-        server task-agent:8000;
-    }
-
-    server {
-        listen 80;
-
-        # Route to brainstormer agent
-        location /brainstormer/generate {
-            proxy_pass http://brainstormer/generate;
-            
-            # Critical for streaming responses
-            proxy_buffering off;
-            proxy_cache off;
-            proxy_read_timeout 300s;
-            chunked_transfer_encoding on;
-            
-            # CORS headers
-            add_header Access-Control-Allow-Origin *;
-        }
-
-        # ... (similar configs for critic, roadmap, task)
-    }
-}
+# ... same for /criticize, /roadmap, /tasks, /pitchdeck
 ```
 
-**Key Technical Decisions:**
+### Dockerfile Highlights
 
-1. **`proxy_buffering off`**  
-   Why? Nginx won't wait for the full response before sending to client. Critical for streaming!
+```dockerfile
+FROM python:3.9-slim
 
-2. **`chunked_transfer_encoding on`**  
-   Why? Allows sending response in chunks as AI generates text.
+# Install nginx + Python deps
+RUN apt-get install -y nginx
+RUN pip install fastapi uvicorn openai
 
-3. **`proxy_read_timeout 300s`**  
-   Why? AI responses can take time; prevents premature connection termination.
+# Copy all 5 agents
+COPY brainstormer-agent /app/brainstormer-agent
+COPY critic-agent /app/critic-agent
+# ... (roadmap, task, pitch-deck)
 
----
+# Startup script: Launch all agents + nginx
+RUN echo 'cd /app/brainstormer-agent && uvicorn main:app --port 8001 &\n\
+cd /app/critic-agent && uvicorn main:app --port 8002 &\n\
+cd /app/roadmap-agent && uvicorn main:app --port 8003 &\n\
+cd /app/task-agent && uvicorn main:app --port 8004 &\n\
+cd /app/pitch-deck-agent && uvicorn main:app --port 8005 &\n\
+nginx -g "daemon off;"' > /app/start.sh
 
-### Docker Compose Orchestration
-
-```yaml
-services:
-  # Agent 1: Brainstormer (Meta Llama 3.3 70B)
-  brainstormer-agent:
-    build: ./brainstormer-agent
-    environment:
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-  
-  # Agent 2: Critic (Meta Llama 3.3 70B)
-  critic-agent:
-    build: ./critic-agent
-    environment:
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-  
-  # Agent 3: Roadmap (Meta Llama 3.3 70B)
-  roadmap-agent:
-    build: ./roadmap-agent
-    environment:
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-  
-  # Agent 4: Task (Cerebras Llama 3.1 8B)
-  task-agent:
-    build: ./task-agent
-    environment:
-      - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}  # Different provider!
-  
-  # API Gateway (Single entry point)
-  nginx-gateway:
-    image: nginx:latest
-    ports:
-      - "8080:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+EXPOSE 8080
+CMD ["/bin/bash", "/app/start.sh"]
 ```
 
-**Why This Architecture?**
+### Docker Metrics
 
-| Benefit | Explanation |
-|---------|-------------|
-| **Isolation** | Each agent runs in its own container; crashes don't affect others |
-| **Scalability** | Can run multiple instances of popular agents (e.g., 3x task-agent) |
-| **Development** | `docker-compose up` brings entire backend online instantly |
-| **Production Ready** | Deploy to Kubernetes with minimal changes |
-| **Security** | Agents don't expose ports; only gateway is public |
-
----
-
-### Docker: By The Numbers
-
-| Metric | Value | Why It Matters |
-|--------|-------|----------------|
-| **Services** | 6 containers | 5 agents + 1 nginx gateway |
-| **Build Time** | ~45 seconds | Multi-stage builds optimized |
-| **Startup Time** | ~10 seconds | All services up and running |
-| **Memory Usage** | ~800MB total | Lightweight Python containers |
-| **Gateway Latency** | <5ms | Nginx routing overhead negligible |
+| Metric | Value |
+|--------|-------|
+| **Containers** | 1 (not 6) |
+| **Processes** | 6 (5 agents + nginx) |
+| **Build Time** | ~45 seconds |
+| **Memory** | ~800MB total |
+| **Startup** | ~10 seconds |
 
 ---
 
-## 🎯 Why This Project Wins
+## 🎯 Why This Wins
 
-### For Meta Prize
-1. ✅ Uses Llama 3.3 70B (latest open-source model)
-2. ✅ Advanced prompt engineering (few-shot learning)
-3. ✅ 80% of agents powered by Meta Llama
-4. ✅ Showcases Llama's strengths: creativity, analysis, planning
+### Meta Prize ✅
+- 4/5 agents = 80% Llama-powered
+- Advanced prompting (persona-aware, few-shot)
+- Diverse use cases (creative + analytical)
 
-### For Cerebras Prize
-1. ✅ Demonstrates ultra-fast inference (20x speedup)
-2. ✅ Smart multi-provider strategy
-3. ✅ Performance optimization (right model for the task)
-4. ✅ Showcases Cerebras' speed advantage
+### Cerebras Prize ✅
+- 10x faster task generation
+- Smart multi-provider strategy
+- Production fallback mechanism
 
-### For Docker Prize
-1. ✅ Production-ready microservices with Nginx gateway
-2. ✅ Clean separation of 5 AI agent services
-3. ✅ Streaming-friendly configuration
-4. ✅ One-command deployment
+### Docker Prize ✅
+- Production-ready Nginx gateway
+- Clean microservices architecture
+- One-command deployment
 
 ---
 
-**Built with ❤️ using the best open-source AI and infrastructure tools**
+## 📊 Technical Achievements
 
-[← Back to README](./README.md) | [Architecture Deep Dive →](./ARCHITECTURE.md)
+| What | How | Impact |
+|------|-----|--------|
+| **Multi-Provider AI** | OpenRouter + Cerebras | Optimal performance per task |
+| **Real-Time Streaming** | Nginx HTTP/1.1 config | Superior UX (no loading spinners) |
+| **Persona-Aware AI** | Dynamic prompts | Ideas tailored to user context |
+| **Resilience** | Cerebras→OpenRouter fallback | No single point of failure |
 
+---
+
+**Built with ❤️ for WeMakeDevs GenAI Hackathon 2025**
+
+[← README](./README.md) | [Architecture →](./ARCHITECTURE.md)

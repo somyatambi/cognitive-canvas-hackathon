@@ -7,10 +7,8 @@
 2. [Multi-Agent Architecture](#multi-agent-architecture)
 3. [Docker Microservices Gateway Design](#docker-microservices-gateway-design)
 4. [Frontend Architecture](#frontend-architecture)
-5. [AI Model Selection Strategy](#ai-model-selection-strategy)
-6. [Streaming Response Pipeline](#streaming-response-pipeline)
-7. [Performance Optimizations](#performance-optimizations)
-8. [Security Considerations](#security-considerations)
+5. [Streaming Response Pipeline](#streaming-response-pipeline)
+6. [Security Considerations](#security-considerations)
 
 ---
 
@@ -26,7 +24,7 @@ User Input → Frontend → API Gateway → Specialized Agent → Stream Respons
 ### Key Design Principles
 1. **Agent Specialization**: Each agent has a single, well-defined responsibility
 2. **Async Streaming**: Non-blocking real-time responses for better UX
-3. **Model Diversity**: Match AI model to task requirements (creativity vs speed)
+3. **Model Diversity**: Match AI model to task requirements
 4. **Visual First**: Canvas-based UI for spatial thinking
 
 ---
@@ -35,24 +33,13 @@ User Input → Frontend → API Gateway → Specialized Agent → Stream Respons
 
 ### Agent Specialization Matrix
 
-| Agent | Model | Provider | Strengths | Use Case |
-|-------|-------|----------|-----------|----------|
-| **Brainstormer** | Llama 3.3 70B | OpenRouter | Creative ideation, instruction following | Generate 3 focused startup ideas |
-| **Critic** | Llama 3.3 70B | OpenRouter | Balanced analysis, nuanced feedback | Provide constructive critique |
-| **Roadmap** | Llama 3.3 70B | OpenRouter | Strategic planning, phase breakdown | Create development roadmaps |
-| **Task** | Llama 3.1 8B | Cerebras | Ultra-fast structured output | Generate actionable task lists |
-
-### Why Different Models?
-
-**Llama 3.3 70B (Brainstormer, Critic, Roadmap)**
-- Larger parameter count → better reasoning for complex creative tasks
-- Superior instruction following for nuanced prompts
-- Handles multi-turn context effectively
-
-**Llama 3.1 8B via Cerebras (Task Agent)**
-- 20x faster inference due to Cerebras hardware
-- Perfect for structured output (task lists with categories)
-- Demonstrates multi-provider orchestration
+| Agent | Model | Provider | Use Case |
+|-------|-------|----------|----------|
+| **Brainstormer** | Llama 3.3 70B | OpenRouter | Generate 3 focused startup ideas |
+| **Critic** | Llama 3.3 70B | OpenRouter | Provide constructive critique with strengths/weaknesses |
+| **Roadmap** | Llama 3.3 70B | OpenRouter | Create phased development roadmaps |
+| **Task** | Llama 3.1 8B | Cerebras | Generate actionable task lists (20x faster) |
+| **Pitch Deck** | Llama 3.3 70B | OpenRouter | Generate investor-ready pitch deck content |
 
 ### Agent Communication Pattern
 
@@ -60,83 +47,56 @@ User Input → Frontend → API Gateway → Specialized Agent → Stream Respons
 # Each agent is a FastAPI microservice with identical interface
 @app.post("/generate")
 async def generate_response(request: AgentRequest):
-    return StreamingResponse(
-        stream_generator(request.prompt, model, system_prompt),
-        media_type='text/plain'
-    )
+  return StreamingResponse(
+    stream_generator(request.prompt, model, system_prompt),
+    media_type='text/plain'
+  )
 ```
-
-**Benefits:**
-- Uniform API contract across all agents
-- Easy to add new agents (just implement `/generate` endpoint)
-- Horizontal scaling: run multiple instances of popular agents
 
 ---
 
 ## Docker Microservices Gateway Design
 
-### Architecture Overview
-
-Our implementation uses **Nginx as a lightweight reverse proxy** to route requests to specialized containerized AI agents, implementing a clean microservices pattern.
-
 ### Gateway Configuration
 
 ```nginx
-# nginx.conf
-upstream brainstormer {
-    server brainstormer-agent:8000;
-}
-upstream critic {
-    server critic-agent:8000;
-}
-upstream roadmap {
-    server roadmap-agent:8000;
-}
-upstream task {
-    server task-agent:8000;
-}
+# nginx.conf - Routes to specialized agents
+upstream brainstormer { server brainstormer-agent:8000; }
+upstream critic { server critic-agent:8000; }
+upstream roadmap { server roadmap-agent:8000; }
+upstream task { server task-agent:8000; }
+upstream pitchdeck { server pitchdeck-agent:8000; }
 
 location /brainstormer/generate {
-    proxy_pass http://brainstormer/generate;
-    # Streaming-friendly settings
-    proxy_buffering off;
-    proxy_cache off;
-    chunked_transfer_encoding on;
+  proxy_pass http://brainstormer/generate;
+  proxy_buffering off;  # Enable streaming
 }
 ```
-
-### Why Nginx for API Gateway?
-
-1. **Low Latency**: Sub-millisecond routing overhead
-2. **Streaming Support**: Native support for chunked transfer encoding
-3. **Production Ready**: Battle-tested for high-scale deployments
-4. **Simple Config**: Easy to understand and modify
 
 ### Docker Compose Orchestration
 
 ```yaml
 services:
   brainstormer-agent:
-    build: ./brainstormer-agent
-    environment:
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+  build: ./brainstormer-agent
+  environment:
+    - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
   
   task-agent:
-    build: ./task-agent
-    environment:
-      - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}  # Different provider!
+  build: ./task-agent
+  environment:
+    - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}
+  
+  pitchdeck-agent:
+  build: ./pitchdeck-agent
+  environment:
+    - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
   
   nginx-gateway:
-    image: nginx:latest
-    ports:
-      - "8080:80"  # Single entry point for all agents
+  image: nginx:latest
+  ports:
+    - "8080:80"
 ```
-
-**Benefits:**
-- **Isolation**: Each agent runs in its own container
-- **Scalability**: Can deploy to Kubernetes with minimal changes
-- **Development**: `docker-compose up` brings entire backend online
-- **Security**: Agents don't expose ports directly, only gateway does
 
 ---
 
@@ -145,122 +105,29 @@ services:
 ### React Flow Integration
 
 ```tsx
-// Core pattern: Nodes represent AI outputs, edges show relationships
-const nodeTypes = {
-  custom: CustomNode,  // For ideas, critiques, roadmaps
-  task: TaskNode       // Specialized rendering for task lists
-};
-
 // Dynamic node creation from streaming responses
 const addNode = (content: string, type: string, parentId?: string) => {
   const newNode = {
-    id: `node-${Date.now()}`,
-    type: 'custom',
-    data: { label: content, icon, color, agentName },
-    position: calculatePosition(parentId)
+  id: `node-${Date.now()}`,
+  type: 'custom',
+  data: { label: content, icon, color, agentName },
+  position: calculatePosition(parentId)
   };
   setNodes([...nodes, newNode]);
 };
 ```
 
-### Custom Node Design
-
-Our `CustomNode` component intelligently parses AI responses:
-
-```tsx
-// 3 rendering modes based on content structure:
-
-// 1. Numbered List (Brainstormer ideas)
-const isNumberedList = lines.some(line => /^\d+\./.test(line));
-
-// 2. Structured Sections (Critic feedback with emojis)
-const hasStructuredSections = label.includes('💪') || label.includes('⚠️');
-
-// 3. Simple Text (Roadmap phases)
-// Falls back to plain text rendering
-```
-
-**Why This Matters:**
-- Single component handles multiple AI response formats
-- Maintains visual consistency across agent types
-- Extensible for future agent types
-
 ### Streaming Response Handling
 
 ```tsx
-// Axios stream processing
+// Real-time UI updates
 const response = await axios.post(url, { prompt }, {
   responseType: 'stream',
-  adapter: 'fetch',
   onDownloadProgress: (progressEvent) => {
-    const text = progressEvent.event.target.responseText;
-    updateNodeContent(text);  // Real-time UI update
+  const text = progressEvent.event.target.responseText;
+  updateNodeContent(text);
   }
 });
-```
-
-**User Experience Benefits:**
-- No loading spinners - watch AI "think"
-- Perceived latency reduced by 60%
-- Immediate feedback loop
-
----
-
-## AI Model Selection Strategy
-
-### Decision Framework
-
-```
-Task Characteristics → Model Selection
-
-Creative, Nuanced, Multi-step
-    ↓
-Llama 3.3 70B (OpenRouter)
-    ↓
-Examples: Brainstorming, Critique, Strategic Planning
-
-Fast, Structured, Predictable Output
-    ↓
-Llama 3.1 8B (Cerebras)
-    ↓
-Examples: Task Lists, Data Extraction
-```
-
-### Prompt Engineering Insights
-
-**Brainstormer Agent: Few-Shot Learning**
-```python
-# ❌ Doesn't work well - too vague
-system_prompt = "Generate 3 startup ideas, 4-6 words each"
-
-# ✅ Works excellently - concrete examples
-system_prompt = """
-Example 1:
-1. AI-Powered Fitness Coach App
-2. Smart Grocery List Generator
-3. Language Learning Through Gaming
-
-Now generate 3 ideas for: {user_prompt}
-"""
-```
-
-**Why Few-Shot > Instructions?**
-- Shows model the *exact* format you want
-- Anchors response length and style
-- Reduces need for post-processing
-
-### Token Budget Management
-
-```python
-# Task Agent: Short, structured output
-async def stream_generator(prompt, model, system_prompt):
-    stream = client.chat.completions.create(
-        model=model,
-        messages=[...],
-        max_tokens=500,      # Prevent rambling
-        temperature=0.7,     # Balance creativity/consistency
-        stream=True
-    )
 ```
 
 ---
@@ -270,83 +137,36 @@ async def stream_generator(prompt, model, system_prompt):
 ### End-to-End Flow
 
 ```
-1. User clicks "Brainstorm"
+1. User clicks agent button
    ↓
-2. Frontend sends POST to http://localhost:8080/brainstormer/generate
+2. Frontend → http://localhost:8080/{agent}/generate
    ↓
-3. Nginx routes to brainstormer-agent:8000/generate
+3. Nginx routes to agent container
    ↓
-4. FastAPI creates OpenAI stream
+4. FastAPI streams OpenAI response
    ↓
-5. For each chunk:
-   - Extract content from delta
-   - Yield to HTTP response
+5. Frontend receives chunks in real-time
    ↓
-6. Frontend Axios receives chunks
-   ↓
-7. Update React state on each chunk
-   ↓
-8. React Flow re-renders node with new content
+6. React Flow updates canvas progressively
 ```
 
-### Streaming Implementation Details
+### Implementation
 
 **Backend (FastAPI)**
 ```python
 async def stream_generator(prompt, model, system_prompt):
-    stream = client.chat.completions.create(..., stream=True)
-    for chunk in stream:
-        content = chunk.choices[0].delta.content
-        if content:
-            yield content  # Sends immediately to client
+  stream = client.chat.completions.create(..., stream=True)
+  for chunk in stream:
+    if content := chunk.choices[0].delta.content:
+      yield content
 ```
 
 **Frontend (Axios)**
 ```tsx
-let fullText = '';
-const response = await axios.post(url, data, {
-  responseType: 'stream',
-  onDownloadProgress: (event) => {
-    fullText = event.target.responseText;
-    setStreamingText(fullText);  // Trigger re-render
-  }
-});
-```
-
-**Why Streaming?**
-- First byte arrives in ~300ms (vs 5+ seconds for full response)
-- Users see progress, reducing perceived wait time
-- More engaging interaction pattern
-
----
-
-## Performance Optimizations
-
-### 1. React Flow Rendering
-```tsx
-// Memoize node components to prevent unnecessary re-renders
-const CustomNode = memo(({ data }: NodeProps<CustomNodeData>) => {
-  // Component logic
-});
-```
-
-### 2. Cerebras for Speed-Critical Paths
-- Task generation: **Cerebras (200ms avg)** vs OpenRouter (1.5s avg)
-- 7.5x speedup for structured output tasks
-
-### 3. Nginx Caching (Future Enhancement)
-```nginx
-# Cache agent responses for identical prompts
-proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=ai_cache:10m;
-```
-
-### 4. Docker Build Optimization
-```dockerfile
-# Multi-stage builds to reduce image size
-FROM python:3.11-slim as builder
-# Install dependencies
-FROM python:3.11-slim
-COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+onDownloadProgress: (event) => {
+  fullText = event.target.responseText;
+  setStreamingText(fullText);
+}
 ```
 
 ---
@@ -355,88 +175,41 @@ COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/pytho
 
 ### API Key Management
 ```bash
-# ✅ Environment variables (never committed)
+# Environment variables (never committed)
 OPENROUTER_API_KEY=sk-or-v1-xxx
 CEREBRAS_API_KEY=csk-xxx
-
-# ❌ Hardcoded keys (NEVER do this)
-client = OpenAI(api_key="sk-or-v1-xxx")  # BAD!
 ```
 
 ### CORS Configuration
 ```python
 app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # ⚠️ Development only
-    # Production: allow_origins=["https://yourdomain.com"]
+  CORSMiddleware,
+  allow_origins=["*"],  # Development only
 )
 ```
 
 ### Input Validation
 ```python
 class AgentRequest(BaseModel):
-    prompt: str
+  prompt: str
 
-    @validator('prompt')
-    def validate_prompt(cls, v):
-        if len(v) > 1000:
-            raise ValueError('Prompt too long')
-        return v
-```
-
----
-
-## Scalability Roadmap
-
-### Phase 1: Current (Single Machine)
-- Docker Compose on single host
-- All agents running in containers
-- Suitable for: Hackathon demo, development
-
-### Phase 2: Cloud Deployment (Future)
-- Deploy to Railway/Render
-- Frontend on Vercel
-- Gateway on Cloud Run
-- Suitable for: Beta users, testing
-
-### Phase 3: Production (Hypothetical)
-```
-Kubernetes Cluster
-├── Brainstormer Pod (3 replicas)
-├── Critic Pod (2 replicas)
-├── Roadmap Pod (2 replicas)
-└── Task Pod (5 replicas)  ← Most traffic
-    ↑
-Load Balancer
-    ↑
-CDN (Cloudflare)
+  @validator('prompt')
+  def validate_prompt(cls, v):
+    if len(v) > 1000:
+      raise ValueError('Prompt too long')
+    return v
 ```
 
 ---
 
 ## Technical Achievements
 
-### 1. Multi-Provider AI Orchestration
-- ✅ Combined OpenRouter (Llama 3.3 70B) and Cerebras (Llama 3.1 8B)
-- ✅ Model selection based on task requirements
-- ✅ Unified interface despite different providers
-
-### 2. Real-Time Streaming Architecture
-- ✅ Server-Sent Events via chunked transfer encoding
-- ✅ Sub-second first-byte response time
-- ✅ Smooth UX with progressive content rendering
-
-### 3. Docker Containerized Microservices
-- ✅ Microservices pattern with clean separation
-- ✅ Production-ready Nginx configuration
-- ✅ One-command deployment (`docker-compose up`)
-
-### 4. Intelligent UI Rendering
-- ✅ React Flow canvas for spatial thinking
-- ✅ Custom nodes with format detection
-- ✅ Context-aware action menus
+✅ **5 Specialized AI Agents** (Brainstormer, Critic, Roadmap, Task, Pitch Deck)  
+✅ **Multi-Provider Orchestration** (OpenRouter + Cerebras)  
+✅ **Real-Time Streaming** (Sub-second first-byte response)  
+✅ **Docker Microservices** (Nginx gateway + isolated containers)  
+✅ **React Flow Canvas** (Visual spatial thinking interface)
 
 **Built with ❤️ for WeMakeDevs Fullstack GenAI Hackathon**
 
 [← Back to README](./README.md)
-
